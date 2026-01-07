@@ -29,8 +29,20 @@ public class Utils {
         println(o);
     }
 
-    static double toDouble(Object o){
+    static double asDouble(Object o){
         return ((Number)o).doubleValue();
+    }
+
+    static int asInt(Object o){
+        return ((Number)o).intValue();
+    }
+
+    static String asString(Object o){
+        return String.valueOf(o);
+    }
+
+    static boolean asBoolean(Object o){
+        return Boolean.parseBoolean(asString(o));
     }
 
 }

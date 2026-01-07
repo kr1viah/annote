@@ -28,7 +28,7 @@ public interface ConditionExpr extends Expression{
             Object o2 = e2.evaluate().value();
             ensureNotBoolean(o1, o2);
             ensureNotString(o1, o2);
-            return new BoolValue(toDouble(o1) > toDouble(o2));
+            return new BoolValue(asDouble(o1) > asDouble(o2));
         }
     }
 
@@ -39,7 +39,7 @@ public interface ConditionExpr extends Expression{
             Object o2 = e2.evaluate().value();
             ensureNotBoolean(o1, o2);
             ensureNotString(o1, o2);
-            return new BoolValue(toDouble(o1) < toDouble(o2));
+            return new BoolValue(asDouble(o1) < asDouble(o2));
         }
     }
 
@@ -52,7 +52,7 @@ public interface ConditionExpr extends Expression{
             Object o2 = e2.evaluate().value();
             ensureNotBoolean(o1, o2);
             ensureNotString(o1, o2);
-            return new BoolValue(toDouble(o1) >= toDouble(o2));
+            return new BoolValue(asDouble(o1) >= asDouble(o2));
         }
     }
 
@@ -63,28 +63,28 @@ public interface ConditionExpr extends Expression{
             Object o2 = e2.evaluate().value();
             ensureNotBoolean(o1, o2);
             ensureNotString(o1, o2);
-            return new BoolValue(toDouble(o1)  <= toDouble(o2));
+            return new BoolValue(asDouble(o1) <= asDouble(o2));
         }
     }
 
     record Not(BoolValue result) implements ConditionExpr {
         @Override
         public BoolValue evaluate() {
-            return new BoolValue(!(boolean)result.value());
+            return new BoolValue(!asBoolean(result.value));
         }
     }
 
     record And(BoolValue r1, BoolValue r2) implements ConditionExpr{
         @Override
         public BoolValue evaluate() {
-            return new BoolValue((boolean)r1.value && (boolean)r2.value);
+            return new BoolValue(asBoolean(r1.value) && asBoolean(r2.value));
         }
     }
 
     record Or(BoolValue r1, BoolValue r2) implements ConditionExpr{
         @Override
         public BoolValue evaluate() {
-            return new BoolValue((boolean)r1.value || (boolean)r2.value);
+            return new BoolValue(asBoolean(r1.value) || asBoolean(r2.value));
         }
     }
 }

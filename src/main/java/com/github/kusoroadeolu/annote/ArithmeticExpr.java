@@ -23,12 +23,12 @@ public interface ArithmeticExpr extends Expression{
                 String s2 = String.valueOf(o2);
                 return new ArithmeticValue(s1 + s2);
             }else if (isDoubleInstance(o1) || isDoubleInstance(o2)){
-                double d1 = toDouble(o1);
-                double d2 = toDouble(o2);
+                double d1 = asDouble(o1);
+                double d2 = asDouble(o2);
                 return new ArithmeticValue(d1 + d2); //Just cast both to double
             }else { //Both should be integers, since you cant add booleans
-                int i1 = (int) o1;
-                int i2 = (int) o2;
+                int i1 = asInt(o1);
+                int i2 = asInt(o2);
                 return new ArithmeticValue(i1 + i2);
             }
 
@@ -45,12 +45,12 @@ public interface ArithmeticExpr extends Expression{
             ensureNotBoolean(o1, o2);
 
             if (isDoubleInstance(o1) || isDoubleInstance(o2)){
-                double d1 = ((Number) o1).doubleValue();
-                double d2 = ((Number) o2).doubleValue();
+                double d1 = asDouble(o1);
+                double d2 = asDouble(o2);
                 return new ArithmeticValue(d1 - d2); //Just cast both to double
             }else { //Both should be integers, since you cant add booleans
-                int i1 = (int) o1;
-                int i2 = (int) o2;
+                int i1 = asInt(o1);
+                int i2 = asInt(o2);
                 return new ArithmeticValue(i1 - i2);
             }
 
@@ -65,14 +65,13 @@ public interface ArithmeticExpr extends Expression{
             ensureNotString(o1, o2);
             ensureNotBoolean(o1, o2);
             if (isDoubleInstance(o1) || isDoubleInstance(o2)){
-                double d1 = toDouble(o1);
-                double d2 = toDouble(o2);
+                double d1 = asDouble(o1);
+                double d2 = asDouble(o2);
                 return new ArithmeticValue(d1 / d2); //Just cast both to double
             }else { //Both should be integers, since you cant add booleans
-                int i1 = (int) o1;
-                int i2 = (int) o2;
-                double d = ((Number) (i1 / i2)).doubleValue();
-                return new ArithmeticValue(d);
+                int i1 = asInt(o1);
+                int i2 = asInt(o2);
+                return new ArithmeticValue(asDouble(i1/i2));
             }
 
         }
@@ -87,12 +86,12 @@ public interface ArithmeticExpr extends Expression{
             ensureNotBoolean(o1, o2);
 
             if (isDoubleInstance(o1) || isDoubleInstance(o2)){
-                double d1 = toDouble(o1);
-                double d2 = toDouble(o2);
+                double d1 = asDouble(o1);
+                double d2 = asDouble(o2);
                 return new ArithmeticValue(d1 * d2); //Just cast both to double
             }else { //Both should be integers, since you cant add booleans
-                int i1 = (int) o1;
-                int i2 = (int) o2;
+                int i1 = asInt(o1);
+                int i2 = asInt(o2);
                 return new ArithmeticValue(i1 * i2);
             }
         }
@@ -106,12 +105,12 @@ public interface ArithmeticExpr extends Expression{
             ensureNotBoolean(o1, o2);
 
             if (isDoubleInstance(o1) || isDoubleInstance(o2)){
-                double d1 = toDouble(o1);
-                double d2 = toDouble(o2);
+                double d1 = asDouble(o1);
+                double d2 = asDouble(o2);
                 return new ArithmeticValue(d1 % d2); //Just cast both to double
             }else { //Both should be integers, since you cant add booleans
-                int i1 = (int) o1;
-                int i2 = (int) o2;
+                int i1 = asInt(o1);
+                int i2 = asInt(o2);
                 return new ArithmeticValue(i1 % i2);
             }
 
