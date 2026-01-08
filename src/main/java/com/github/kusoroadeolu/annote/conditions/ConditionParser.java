@@ -16,11 +16,16 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.List;
 
+import static com.github.kusoroadeolu.annote.Utils.asBoolean;
+
 public class ConditionParser {
 
     private final SymbolTokenizer tokenizer = new SymbolTokenizer();
 
     public boolean parse(String s) {
+        if (s.equals("true")) return true;
+        else if(s.equals("false")) return false;
+
         List<Token> tokens = tokenizer.reform(s);
         Deque<Expression> dq = new ArrayDeque<>();
         for (Token t : tokens){
@@ -48,7 +53,7 @@ public class ConditionParser {
             }
         }
         Object e = dq.pop().evaluate().value();
-        return Utils.asBoolean(e);
+        return asBoolean(e);
     }
 
     // Note: brackets handled separately

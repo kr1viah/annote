@@ -32,7 +32,7 @@ public class MethodAnnotationReader {
                 if (val == null) continue;
                 Type t = Type.fromString(type);
                 if (t == Type.NUMBER){
-                    double num = 0d;
+                    double num = 0;
                     if (!val.isBlank()){
                         String rebuilt = this.insertVariables(val, publicVariables);
                         num = mathParser.parse(rebuilt);
@@ -42,6 +42,8 @@ public class MethodAnnotationReader {
                     String rebuilt = this.insertVariables(val, publicVariables);
                     boolean b = conditionParser.parse(rebuilt);
                     publicVariables.put(name, new Variable(t, b));
+                }else if (t == Type.STRING){
+                    publicVariables.put(name, new Variable(t, v.value()));
                 }
 
 
@@ -62,7 +64,8 @@ public class MethodAnnotationReader {
                     IO.println("Var value: " + varBuilder);
                     Variable v = map.get(varBuilder.toString());
                     if (v != null) mainBuilder.append(v.o());
-                    else throw new IllegalArgumentException("Variable: '%s' not found".formatted(varBuilder));
+                    else throw new IllegalArgumentException("Variable: '%s' not found".formatted(varBuilder)); //This is kinda hacky, might come back to this
+
                     varBuilder.setLength(0);
                 }
 

@@ -4,6 +4,7 @@ import java.util.*;
 
 
 import static com.github.kusoroadeolu.annote.tokenizer.Operator.fromChar;
+import static java.lang.Character.isAlphabetic;
 import static java.lang.Double.parseDouble;
 
 //So while the head of the stack has a less or equal precedence to the current symbol, we pop them off the stack onto the list
@@ -12,7 +13,7 @@ public class SymbolTokenizer {
     private final static char DOT = '.';
     private final static Set<Character> SET = Set.of('+', '-', '/', '%', '^', '*', ')', '(');
     private final Deque<Symbol> symbols = new ArrayDeque<>();
-    private final StringBuilder numBuilder = new StringBuilder();
+    private final StringBuilder builder = new StringBuilder();
 
 
     // Note: brackets handled separately
@@ -21,13 +22,13 @@ public class SymbolTokenizer {
         for (int i = 0; i < str.length(); ++i){
             char c = str.charAt(i);
             if (isNum(c)){
-                numBuilder.append(c);
+                builder.append(c);
             } else { //Is a symbol
 
-                if (!numBuilder.isEmpty()){
-                    double d = parseDouble(numBuilder.toString());
+                if (!builder.isEmpty()){
+                    double d = parseDouble(builder.toString());
                     output.add(new Token(d));
-                    numBuilder.setLength(0);
+                    builder.setLength(0);
                 }
 
                 Symbol curr;
@@ -78,9 +79,9 @@ public class SymbolTokenizer {
         //END OF LOOP
 
 
-        if (!numBuilder.isEmpty()){
-            double d = parseDouble(numBuilder.toString());
-            numBuilder.setLength(0);
+        if (!builder.isEmpty()){
+            double d = parseDouble(builder.toString());
+            builder.setLength(0);
             output.add(new Token(d)); //Add the last number
         }
 
