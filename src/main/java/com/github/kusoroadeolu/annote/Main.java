@@ -1,13 +1,15 @@
+import com.github.kusoroadeolu.annote.MethodAnnotationReader;
+import com.github.kusoroadeolu.annote.Utils;
 import com.github.kusoroadeolu.annote.conditions.ConditionParser;
+import com.github.kusoroadeolu.annote.tokenizer.Condition;
+import com.github.kusoroadeolu.annote.tokenizer.Operator;
+
+import static com.github.kusoroadeolu.annote.MethodAnnotationReader.*;
 
 void main() {
- boolean b = new ConditionParser().parse("1+2>5&&3<10");
- IO.println(b);
+String expr = "num + num2";
 
 }
 
 
-void assign(){
-
-}
 

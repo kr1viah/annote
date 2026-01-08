@@ -26,8 +26,8 @@ public class ConditionParser {
         for (Token t : tokens){
             if (t.isNumber()) dq.push(new ArithmeticValue(t.o()));
             else if (t.isOperator()){
-                ArithmeticExpr e2 = new ArithmeticValue(dq.pop());
-                ArithmeticExpr e1 = new ArithmeticValue(dq.pop());
+                ArithmeticExpr e2 = (ArithmeticExpr) dq.pop();
+                ArithmeticExpr e1 = (ArithmeticExpr) dq.pop();
                 dq.push(evaluate(e1, e2, (Operator) t.o()));
             }else if (t.isCondition()){
                 Condition cond = (Condition) t.o();
@@ -70,7 +70,7 @@ public class ConditionParser {
 
     static Expression evaluateComparison(Expression e1, Expression e2, Condition condition){
 
-        return switch (condition){
+        ConditionExpr e = switch (condition){
             case GREATER_THAN -> new ConditionExpr.GreaterThan(e1, e2);
             case GREATER_THAN_OR_EQUALS -> new ConditionExpr.GreaterThanOrEquals(e1, e2);
             case LESS_THAN -> new ConditionExpr.LessThan(e1, e2);
@@ -79,5 +79,7 @@ public class ConditionParser {
             default -> throw new IllegalArgumentException("expected '>', '>=', '<', '<=', '!'");
 
         };
+
+        return (Expression) e.evaluate();
     }
 }

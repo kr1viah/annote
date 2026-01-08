@@ -31,17 +31,17 @@ public class SymbolTokenizer {
                 }
 
                 Symbol curr;
-                if (isOperator(c)){
+                if (isOperator(c)) {
                     curr = fromChar(c);
-                }else if (isCondition(c)){
+                }else if(isCondition(c + "" + str.charAt(i + 1))){
                     char next = str.charAt(i + 1);
                     String ss = c + "" + next; //Check if the next char forms a condition
-                    if (isCondition(ss)){
-                        ++i; //Move forward
-                        curr = Condition.fromString(ss);
-                    }else{
-                        curr = Condition.fromChar(c); //Else just stick to this char
-                    }
+                    ++i; //Move forward
+                    curr = Condition.fromString(ss);
+
+                }else if (isCondition(c)){
+                    curr = Condition.fromChar(c); //Else just stick to this char
+
                 }else{
                     throw new IllegalArgumentException("Symbol: %s not found ".formatted(c));
                 }
@@ -99,7 +99,7 @@ public class SymbolTokenizer {
     }
 
     public static boolean isCondition(String s){
-        return Condition.SYMBOL_MAP.containsKey(s);
+        return Condition.CONDITION_MAP.containsKey(s);
     }
 
     public static boolean isCondition(char c){

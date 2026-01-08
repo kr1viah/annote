@@ -3,9 +3,13 @@ package com.github.kusoroadeolu.annote;
 import com.github.kusoroadeolu.annote.math.ArithmeticExpr;
 import com.github.kusoroadeolu.annote.tokenizer.Operator;
 
+import java.util.Set;
+
 import static java.lang.IO.println;
 
 public class Utils {
+
+    private final static Set<String> INVALID_CHARS = Set.of("|", "&", "=");
 
     public static boolean isDoubleInstance(Object o){
         return o instanceof Double;
@@ -34,6 +38,10 @@ public class Utils {
 
     public static double asDouble(Object o){
         return ((Number)o).doubleValue();
+    }
+
+    public static boolean isInvalidChar(char c){
+        return INVALID_CHARS.contains(String.valueOf(c));
     }
 
     public static int asInt(Object o){

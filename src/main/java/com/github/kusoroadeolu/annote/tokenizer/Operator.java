@@ -1,7 +1,10 @@
 package com.github.kusoroadeolu.annote.tokenizer;
 
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public enum Operator implements Symbol{
     PLUS(new Infix("+", 1)),
@@ -15,6 +18,9 @@ public enum Operator implements Symbol{
 
 
     private final Infix infix;
+    public static final Map<String, Operator> OPERATOR_MAP = Arrays
+            .stream(values())
+            .collect(Collectors.toMap(c -> c.infix.symbol(), Function.identity()));
     Operator(Infix infix) {
         this.infix = infix;
     }
@@ -24,22 +30,18 @@ public enum Operator implements Symbol{
     }
 
     public static Operator fromChar(char c){
-        return switch (c){
-            case '+' -> Operator.PLUS;
-            case '-' -> Operator.MINUS;
-            case '*' -> Operator.MULTIPLY;
-            case '/' -> Operator.DIVISION;
-            case '%' -> Operator.MODULO;
-            case '^' -> Operator.EXPONENTIAL;
-            case '(' -> Operator.LEFT_BRACKET;
-            case ')' -> Operator.RIGHT_BRACKET;
-            default -> throw new IllegalArgumentException("Not an symbol. Might be a condition");
-        };
+        Operator o = OPERATOR_MAP.get(String.valueOf(c));
+        if (o == null) throw new IllegalArgumentException("Operator of symbol: %s not found".formatted(c));
+        return o;
     }
 
     @Override
     public String toString() {
         return String.valueOf(infix);
+    }
+
+    public static boolean isOperator(char c){
+        return OPERATOR_MAP.containsKey(String.valueOf(c));
     }
 
 

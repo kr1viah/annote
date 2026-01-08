@@ -21,6 +21,7 @@ public interface ArithmeticExpr extends Expression {
         public ArithmeticValue evaluate() {
             Object o1 = e1.evaluate().value();
             Object o2 = e2.evaluate().value();
+            ensureNotBoolean(o1, o2);
             if (isStringInstance(o1) || isStringInstance(o2)){
                 String s1 = String.valueOf(o1);
                 String s2 = String.valueOf(o2);
@@ -30,7 +31,7 @@ public interface ArithmeticExpr extends Expression {
                 double d2 = asDouble(o2);
                 return new ArithmeticValue(d1 + d2); //Just cast both to double
             }else { //Both should be integers, since you cant add booleans
-                throw new IllegalArgumentException("num != double?");
+                throw new IllegalArgumentException("Received values o1: %s, o2: %s".formatted(o1, o2));
             }
 
         }

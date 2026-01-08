@@ -1,7 +1,10 @@
 package com.github.kusoroadeolu.annote;
 
 import com.github.kusoroadeolu.annote.annotations.Var;
+import com.github.kusoroadeolu.annote.conditions.ConditionParser;
 import com.github.kusoroadeolu.annote.math.MathParser;
+import com.github.kusoroadeolu.annote.tokenizer.Condition;
+import com.github.kusoroadeolu.annote.tokenizer.Operator;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -11,7 +14,8 @@ import java.util.Map;
 import static com.github.kusoroadeolu.annote.ExceptionSupplier.run;
 
 public class MethodAnnotationReader {
-    private final MathParser parser = new MathParser();
+    private final MathParser mathParser = new MathParser();
+    private final ConditionParser conditionParser = new ConditionParser();
     private final Class<?> clazz;
 
     public MethodAnnotationReader(Class<?> clazz) {
@@ -30,14 +34,14 @@ public class MethodAnnotationReader {
                 if (t == Type.NUMBER){
                     double num = 0d;
                     if (!val.isBlank()){
-                        String rebuilt = this.rebuildString(val, publicVariables);
-                        num = parser.parse(rebuilt);
+                        String rebuilt = this.insertVariables(val, publicVariables);
+                        num = mathParser.parse(rebuilt);
                     }
                     publicVariables.put(name, new Variable(t, num));
                 }else if (t == Type.BOOLEAN){
-                    String rebuilt = this.rebuildString(val, publicVariables);
-
-
+                    String rebuilt = this.insertVariables(val, publicVariables);
+                    boolean b = conditionParser.parse(rebuilt);
+                    publicVariables.put(name, new Variable(t, b));
                 }
 
 
@@ -47,18 +51,36 @@ public class MethodAnnotationReader {
 
 
 
-    String rebuildString(String original, Map<String, Variable> map){
+    String insertVariables(String original, Map<String, Variable> map){
         original = original.replaceAll("\\s++", "");
-        StringBuilder builder = new StringBuilder();
+        StringBuilder varBuilder = new StringBuilder();
+        StringBuilder mainBuilder = new StringBuilder();
         for (int i = 0; i < original.length(); i++){
             char c = original.charAt(i);
-            Object val = map.get(String.valueOf(c));
-            if (val != null) builder.append(val);
-            else builder.append(c);
+            if (Condition.isCondition(c) || Operator.isOperator(c) || Utils.isInvalidChar(c)){
+                if (!varBuilder.isEmpty()){
+                    IO.println("Var value: " + varBuilder);
+                    Variable v = map.get(varBuilder.toString());
+                    if (v != null) mainBuilder.append(v.o());
+                    else throw new IllegalArgumentException("Variable: '%s' not found".formatted(varBuilder));
+                    varBuilder.setLength(0);
+                }
+
+                mainBuilder.append(c);
+                continue;
+            }
+            varBuilder.append(c);
         }
 
-        return builder.toString();
+        if (!varBuilder.isEmpty()) {
+            Variable v = map.get(varBuilder.toString());
+            if (v != null) mainBuilder.append(v.o());
+            else throw new IllegalArgumentException("Variable: '%s' not found".formatted(varBuilder));
+
+        }
+
+        return mainBuilder.toString();
     }
 
-    record Variable(Type type, Object o){ }
+    public record Variable(Type type, Object o){ }
 }

@@ -21,7 +21,7 @@ public enum Condition implements Symbol{
     RIGHT_BRACKET(new Infix(")", 4));
 
     private final Infix infix;
-    static final Map<String, Condition> SYMBOL_MAP = Arrays
+    static final Map<String, Condition> CONDITION_MAP = Arrays
             .stream(values())
             .collect(Collectors.toMap(c -> c.infix.symbol(), Function.identity()));
 
@@ -38,9 +38,13 @@ public enum Condition implements Symbol{
     }
 
     public static Condition fromString(String symbol) {
-        Condition c = SYMBOL_MAP.get(symbol);
+        Condition c = CONDITION_MAP.get(symbol);
         if (c == null) throw new IllegalArgumentException("Symbol: %s, not found".formatted(symbol));
         return c;
+    }
+
+    public static boolean isCondition(char c){
+        return CONDITION_MAP.containsKey(String.valueOf(c));
     }
 
     public static Condition fromChar(char symbol) {
