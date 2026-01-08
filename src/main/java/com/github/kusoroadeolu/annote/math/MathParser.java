@@ -9,29 +9,25 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.List;
 
+import static com.github.kusoroadeolu.annote.Utils.asDouble;
+
 public class MathParser {
 
     private final SymbolTokenizer tokenizer = new SymbolTokenizer();
 
     public double parse(String s) {
         List<Token> tokens = tokenizer.reform(s);
-        Deque<Double> dq = new ArrayDeque<>();
+        Deque<ArithmeticExpr> dq = new ArrayDeque<>();
         for (Token t : tokens){
-            if (t.isNumber()) dq.push((double) t.o());
+            if (t.isNumber()) dq.push(new ArithmeticExpr.ArithmeticValue(asDouble(t.o())));
             else if (t.isOperator()){
-                ArithmeticExpr e2 = new ArithmeticExpr.ArithmeticValue(dq.pop());
-                ArithmeticExpr e1 = new ArithmeticExpr.ArithmeticValue(dq.pop());
-                dq.push(evaluate(e1, e2, (Operator) t.o()));
+                ArithmeticExpr e2 = dq.pop();
+                ArithmeticExpr e1 = dq.pop();
+                dq.push(Utils.eval(e1, e2, (Operator) t.o()));
             }
         }
-
-        return dq.pop();
+        return asDouble(dq.pop().evaluate().value());
     }
 
-    // Note: brackets handled separately
-    static double evaluate(ArithmeticExpr e1, ArithmeticExpr e2, Operator operator){
-        var e = Utils.eval(e1, e2, operator);
-        return Utils.asDouble(e.evaluate().value());
-    }
 
 }

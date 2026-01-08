@@ -34,12 +34,12 @@ public class MethodAnnotationReader {
                 if (t == Type.NUMBER){
                     double num = 0;
                     if (!val.isBlank()){
-                        String rebuilt = this.insertVariables(val, publicVariables);
+                        String rebuilt = insertVariables(val, publicVariables);
                         num = mathParser.parse(rebuilt);
                     }
                     publicVariables.put(name, new Variable(t, num));
                 }else if (t == Type.BOOLEAN){
-                    String rebuilt = this.insertVariables(val, publicVariables);
+                    String rebuilt = insertVariables(val, publicVariables);
                     boolean b = conditionParser.parse(rebuilt);
                     publicVariables.put(name, new Variable(t, b));
                 }else if (t == Type.STRING){
@@ -53,7 +53,7 @@ public class MethodAnnotationReader {
 
 
 
-    String insertVariables(String original, Map<String, Variable> map){
+    public static String insertVariables(String original, Map<String, Variable> map){
         original = original.replaceAll("\\s++", "");
         StringBuilder varBuilder = new StringBuilder();
         StringBuilder mainBuilder = new StringBuilder();
@@ -64,14 +64,14 @@ public class MethodAnnotationReader {
                     IO.println("Var value: " + varBuilder);
                     Variable v = map.get(varBuilder.toString());
                     if (v != null) mainBuilder.append(v.o());
-                    else throw new IllegalArgumentException("Variable: '%s' not found".formatted(varBuilder)); //This is kinda hacky, might come back to this
-
+                    else throw new IllegalArgumentException("Variable: '%s' not found".formatted(varBuilder));
                     varBuilder.setLength(0);
                 }
 
                 mainBuilder.append(c);
                 continue;
             }
+
             varBuilder.append(c);
         }
 
@@ -79,9 +79,9 @@ public class MethodAnnotationReader {
             Variable v = map.get(varBuilder.toString());
             if (v != null) mainBuilder.append(v.o());
             else throw new IllegalArgumentException("Variable: '%s' not found".formatted(varBuilder));
-
         }
 
+        varBuilder.setLength(0);
         return mainBuilder.toString();
     }
 

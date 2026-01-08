@@ -33,16 +33,16 @@ public class ConditionParser {
             else if (t.isOperator()){
                 ArithmeticExpr e2 = (ArithmeticExpr) dq.pop();
                 ArithmeticExpr e1 = (ArithmeticExpr) dq.pop();
-                dq.push(evaluate(e1, e2, (Operator) t.o()));
+                dq.push(Utils.eval(e1, e2, (Operator) t.o()));
             }else if (t.isCondition()){
                 Condition cond = (Condition) t.o();
                 if (cond == Condition.NOT) {
                     Expression e1 = dq.pop();
-                    dq.push(new ConditionExpr.Not((BoolValue) e1));
+                    dq.push(new ConditionExpr.Not(e1));
                 }
                 else if (cond == Condition.AND || cond == Condition.OR) {
-                    BoolValue e2 = (BoolValue) dq.pop();
-                    BoolValue e1 = (BoolValue) dq.pop();
+                    Expression e2 = dq.pop();
+                    Expression e1 = dq.pop();
                     dq.push(evaluate(e1, e2, cond));
                 }
                 else {
@@ -52,30 +52,23 @@ public class ConditionParser {
                 }
             }
         }
-        Object e = dq.pop().evaluate().value();
-        return asBoolean(e);
+
+
+        return asBoolean(dq.pop().evaluate().value());
     }
 
-    // Note: brackets handled separately
-     static Expression evaluate(ArithmeticExpr e1, ArithmeticExpr e2, Operator operator){
-        var e = Utils.eval(e1, e2, operator);
-        return e.evaluate();
-     }
 
-    static Expression evaluate(BoolValue e1, BoolValue e2, Condition condition){
-        ConditionExpr e = switch (condition){
+    static Expression evaluate(Expression e1, Expression e2, Condition condition){
+        return switch (condition){
             case OR -> new ConditionExpr.Or(e1, e2);
             case AND -> new ConditionExpr.And(e1, e2);
             case NOT -> new ConditionExpr.Not(e1);
             default -> throw new IllegalArgumentException("expected '||', '&&', '!'");
         };
-
-        return (BoolValue) e.evaluate();
     }
 
     static Expression evaluateComparison(Expression e1, Expression e2, Condition condition){
-
-        ConditionExpr e = switch (condition){
+        return switch (condition){
             case GREATER_THAN -> new ConditionExpr.GreaterThan(e1, e2);
             case GREATER_THAN_OR_EQUALS -> new ConditionExpr.GreaterThanOrEquals(e1, e2);
             case LESS_THAN -> new ConditionExpr.LessThan(e1, e2);
@@ -84,7 +77,5 @@ public class ConditionParser {
             default -> throw new IllegalArgumentException("expected '>', '>=', '<', '<=', '!'");
 
         };
-
-        return (Expression) e.evaluate();
     }
 }

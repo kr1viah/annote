@@ -70,24 +70,28 @@ public interface ConditionExpr extends Expression {
         }
     }
 
-    record Not(BoolValue result) implements ConditionExpr {
+    record Not(Expression e1) implements ConditionExpr {
         @Override
         public BoolValue evaluate() {
-            return new BoolValue(!asBoolean(result.value));
+            return new BoolValue(!asBoolean(e1.evaluate().value()));
         }
     }
 
-    record And(BoolValue r1, BoolValue r2) implements ConditionExpr{
+    record And(Expression e1, Expression e2) implements ConditionExpr{
         @Override
         public BoolValue evaluate() {
-            return new BoolValue(asBoolean(r1.value) && asBoolean(r2.value));
+            boolean b1 = asBoolean(e1.evaluate().value());
+            boolean b2 = asBoolean(e2.evaluate().value());
+            return new BoolValue(b1 && b2);
         }
     }
 
-    record Or(BoolValue r1, BoolValue r2) implements ConditionExpr{
+    record Or(Expression e1, Expression e2) implements ConditionExpr{
         @Override
         public BoolValue evaluate() {
-            return new BoolValue(asBoolean(r1.value) || asBoolean(r2.value));
+            boolean b1 = asBoolean(e1.evaluate().value());
+            boolean b2 = asBoolean(e2.evaluate().value());
+            return new BoolValue(b1 || b2);
         }
     }
 }
