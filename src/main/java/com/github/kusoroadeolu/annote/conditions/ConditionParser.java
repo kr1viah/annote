@@ -1,31 +1,83 @@
 package com.github.kusoroadeolu.annote.conditions;
 
+
+import com.github.kusoroadeolu.annote.Expression;
+import com.github.kusoroadeolu.annote.Utils;
+import com.github.kusoroadeolu.annote.Value;
+import com.github.kusoroadeolu.annote.conditions.ConditionExpr.BoolValue;
+import com.github.kusoroadeolu.annote.math.ArithmeticExpr;
+import com.github.kusoroadeolu.annote.math.ArithmeticExpr.ArithmeticValue;
+import com.github.kusoroadeolu.annote.tokenizer.Condition;
+import com.github.kusoroadeolu.annote.tokenizer.Operator;
+import com.github.kusoroadeolu.annote.tokenizer.SymbolTokenizer;
+import com.github.kusoroadeolu.annote.tokenizer.Token;
+
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.List;
+
 public class ConditionParser {
 
-//    public static boolean parse(String s){
-//        ArithmeticExpr e1 = new ArithmeticExpr.ArithmeticValue(null);
-//        ArithmeticExpr e2 = new ArithmeticExpr.ArithmeticValue(null);
-//        MathParser.Operator operator = null;
-//        StringBuilder sb = new StringBuilder();
-//        for (int i = 0; i < s.length(); i++){
-//            char c = s.charAt(i);
-//            if (!isNum(c)){
-//                operator = fromChar(c);
-//                continue;
-//            }
-//
-//            sb.append(c);
-//
-//            if (e1.evaluate().value() == null){
-//                e1 = value(sb);
-//            }else if (e2.evaluate().value() == null && operator != null){
-//                e2 =
-//                e1 =
-//                e2 = new ArithmeticExpr.ArithmeticValue(null);
-//            }
-//        }
-//
-//
-//
-//    }
+    private final SymbolTokenizer tokenizer = new SymbolTokenizer();
+
+    public boolean parse(String s) {
+        List<Token> tokens = tokenizer.reform(s);
+        Deque<Expression> dq = new ArrayDeque<>();
+        for (Token t : tokens){
+            if (t.isNumber()) dq.push(new ArithmeticValue(t.o()));
+            else if (t.isOperator()){
+                ArithmeticExpr e2 = new ArithmeticValue(dq.pop());
+                ArithmeticExpr e1 = new ArithmeticValue(dq.pop());
+                dq.push(evaluate(e1, e2, (Operator) t.o()));
+            }else if (t.isCondition()){
+                Condition cond = (Condition) t.o();
+                if (cond == Condition.NOT) {
+                    Expression e1 = dq.pop();
+                    dq.push(new ConditionExpr.Not((BoolValue) e1));
+                }
+                else if (cond == Condition.AND || cond == Condition.OR) {
+                    BoolValue e2 = (BoolValue) dq.pop();
+                    BoolValue e1 = (BoolValue) dq.pop();
+                    dq.push(evaluate(e1, e2, cond));
+                }
+                else {
+                    Expression e2 = dq.pop();
+                    Expression e1 = dq.pop();
+                    dq.push(evaluateComparison(e1, e2, cond));
+                }
+            }
+        }
+        Object e = dq.pop().evaluate().value();
+        return Utils.asBoolean(e);
+    }
+
+    // Note: brackets handled separately
+     static Expression evaluate(ArithmeticExpr e1, ArithmeticExpr e2, Operator operator){
+        var e = Utils.eval(e1, e2, operator);
+        return e.evaluate();
+     }
+
+    static Expression evaluate(BoolValue e1, BoolValue e2, Condition condition){
+        ConditionExpr e = switch (condition){
+            case OR -> new ConditionExpr.Or(e1, e2);
+            case AND -> new ConditionExpr.And(e1, e2);
+            case NOT -> new ConditionExpr.Not(e1);
+            default -> throw new IllegalArgumentException("expected '||', '&&', '!'");
+        };
+
+        return (BoolValue) e.evaluate();
+    }
+
+    static Expression evaluateComparison(Expression e1, Expression e2, Condition condition){
+
+        return switch (condition){
+            case GREATER_THAN -> new ConditionExpr.GreaterThan(e1, e2);
+            case GREATER_THAN_OR_EQUALS -> new ConditionExpr.GreaterThanOrEquals(e1, e2);
+            case LESS_THAN -> new ConditionExpr.LessThan(e1, e2);
+            case LESS_THAN_OR_EQUALS -> new ConditionExpr.LessThanOrEquals(e1, e2);
+            case EQUALS -> new ConditionExpr.Equals(e1, e2);
+            default -> throw new IllegalArgumentException("expected '>', '>=', '<', '<=', '!'");
+
+        };
+    }
 }

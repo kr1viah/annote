@@ -6,7 +6,6 @@ import com.github.kusoroadeolu.annote.math.MathParser;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static com.github.kusoroadeolu.annote.ExceptionSupplier.run;
@@ -45,6 +44,8 @@ public class MethodAnnotationReader {
             }
         }
     }
+
+
 
     String rebuildString(String original, Map<String, Variable> map){
         original = original.replaceAll("\\s++", "");

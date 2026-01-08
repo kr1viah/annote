@@ -1,33 +1,22 @@
-package com.github.kusoroadeolu.annote.math;
+package com.github.kusoroadeolu.annote.tokenizer;
 
-enum Operator {
-    PLUS(new Infix('+', 1)),
-    MINUS(new Infix('-', 1)),
-    MULTIPLY(new Infix('*', 2)),
-    DIVISION(new Infix('/', 2)),
-    MODULO(new Infix('%', 2)),
-    EXPONENTIAL(new Infix('^', 3)),
-    LEFT_BRACKET(new Infix('(', 4)),
-    RIGHT_BRACKET(new Infix(')', 4));
+import java.util.Map;
+import java.util.Set;
 
+public enum Operator implements Symbol{
+    PLUS(new Infix("+", 1)),
+    MINUS(new Infix("-", 1)),
+    MULTIPLY(new Infix("*", 2)),
+    DIVISION(new Infix("/", 2)),
+    MODULO(new Infix("%", 2)),
+    EXPONENTIAL(new Infix("^", 3)),
+    LEFT_BRACKET(new Infix("(", 4)),
+    RIGHT_BRACKET(new Infix(")", 4));
 
 
     private final Infix infix;
-
     Operator(Infix infix) {
         this.infix = infix;
-    }
-
-    boolean isLeftBracket(){
-        return this.infix.operator() == '(';
-    }
-
-    boolean isRightBracket(){
-        return this.infix.operator() == ')';
-    }
-
-    boolean isBracket(){
-        return isLeftBracket() || isRightBracket();
     }
 
     boolean hasLessOrEqualPrecedence(Operator o){
@@ -44,17 +33,17 @@ enum Operator {
             case '^' -> Operator.EXPONENTIAL;
             case '(' -> Operator.LEFT_BRACKET;
             case ')' -> Operator.RIGHT_BRACKET;
-            default -> throw new IllegalArgumentException("???");
+            default -> throw new IllegalArgumentException("Not an symbol. Might be a condition");
         };
     }
-
 
     @Override
     public String toString() {
         return String.valueOf(infix);
     }
 
-    record Infix(char operator, int precedence){
 
+    public Infix infix() {
+        return this.infix;
     }
 }

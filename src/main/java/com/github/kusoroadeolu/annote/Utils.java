@@ -1,5 +1,8 @@
 package com.github.kusoroadeolu.annote;
 
+import com.github.kusoroadeolu.annote.math.ArithmeticExpr;
+import com.github.kusoroadeolu.annote.tokenizer.Operator;
+
 import static java.lang.IO.println;
 
 public class Utils {
@@ -45,5 +48,17 @@ public class Utils {
         return Boolean.parseBoolean(asString(o));
     }
 
+
+    public static ArithmeticExpr eval(ArithmeticExpr e1, ArithmeticExpr e2, Operator operator){
+        return switch (operator){
+            case PLUS -> new ArithmeticExpr.Add(e1, e2);
+            case MINUS -> new ArithmeticExpr.Subtract(e1, e2);
+            case DIVISION -> new ArithmeticExpr.Divide(e1, e2);
+            case MULTIPLY -> new ArithmeticExpr.Multiply(e1, e2);
+            case MODULO -> new ArithmeticExpr.Modulo(e1, e2);
+            case EXPONENTIAL -> new ArithmeticExpr.Exponential(e1, e2);
+            default -> throw new IllegalArgumentException("??");
+        };
+    }
 
 }

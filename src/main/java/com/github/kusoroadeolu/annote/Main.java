@@ -1,8 +1,8 @@
-import com.github.kusoroadeolu.annote.math.MathParser;
+import com.github.kusoroadeolu.annote.conditions.ConditionParser;
 
 void main() {
- double d =  new MathParser().parse("2^3*2");
- IO.println(d);
+ boolean b = new ConditionParser().parse("1+2>5&&3<10");
+ IO.println(b);
 
 }
 

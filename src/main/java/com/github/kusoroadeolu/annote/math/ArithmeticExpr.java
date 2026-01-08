@@ -9,7 +9,6 @@ public interface ArithmeticExpr extends Expression {
     ArithmeticValue evaluate();
 
 
-
     record ArithmeticValue(Object value) implements ArithmeticExpr, Value {
         public ArithmeticValue evaluate() {
             return this;
