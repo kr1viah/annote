@@ -1,12 +1,16 @@
-package com.github.kusoroadeolu.annote;
+package com.github.kusoroadeolu.annote.math;
+
+import com.github.kusoroadeolu.annote.Expression;
+import com.github.kusoroadeolu.annote.Value;
 
 import static com.github.kusoroadeolu.annote.Utils.*;
 
-public interface ArithmeticExpr extends Expression{
+public interface ArithmeticExpr extends Expression {
     ArithmeticValue evaluate();
 
 
-    record ArithmeticValue(Object value) implements ArithmeticExpr, Value{
+
+    record ArithmeticValue(Object value) implements ArithmeticExpr, Value {
         public ArithmeticValue evaluate() {
             return this;
         }
@@ -27,9 +31,7 @@ public interface ArithmeticExpr extends Expression{
                 double d2 = asDouble(o2);
                 return new ArithmeticValue(d1 + d2); //Just cast both to double
             }else { //Both should be integers, since you cant add booleans
-                int i1 = asInt(o1);
-                int i2 = asInt(o2);
-                return new ArithmeticValue(i1 + i2);
+                throw new IllegalArgumentException("num != double?");
             }
 
         }
@@ -44,14 +46,12 @@ public interface ArithmeticExpr extends Expression{
             ensureNotString(o1, o2);
             ensureNotBoolean(o1, o2);
 
-            if (isDoubleInstance(o1) || isDoubleInstance(o2)){
+            if (isDoubleInstance(o1) || isDoubleInstance(o2)) {
                 double d1 = asDouble(o1);
                 double d2 = asDouble(o2);
                 return new ArithmeticValue(d1 - d2); //Just cast both to double
-            }else { //Both should be integers, since you cant add booleans
-                int i1 = asInt(o1);
-                int i2 = asInt(o2);
-                return new ArithmeticValue(i1 - i2);
+            }else {
+                throw new IllegalArgumentException("num != double?");
             }
 
         }
@@ -64,16 +64,13 @@ public interface ArithmeticExpr extends Expression{
             Object o2 = e2.evaluate().value();
             ensureNotString(o1, o2);
             ensureNotBoolean(o1, o2);
-            if (isDoubleInstance(o1) || isDoubleInstance(o2)){
+            if (isDoubleInstance(o1) || isDoubleInstance(o2)) {
                 double d1 = asDouble(o1);
                 double d2 = asDouble(o2);
-                return new ArithmeticValue(d1 / d2); //Just cast both to double
-            }else { //Both should be integers, since you cant add booleans
-                int i1 = asInt(o1);
-                int i2 = asInt(o2);
-                return new ArithmeticValue(asDouble(i1/i2));
+                return new ArithmeticValue(d1/d2); //Just cast both to double
+            }else {
+                throw new IllegalArgumentException("num != double?");
             }
-
         }
     }
 
@@ -84,15 +81,12 @@ public interface ArithmeticExpr extends Expression{
             Object o2 = e2.evaluate().value();
             ensureNotString(o1, o2);
             ensureNotBoolean(o1, o2);
-
-            if (isDoubleInstance(o1) || isDoubleInstance(o2)){
+            if (isDoubleInstance(o1) || isDoubleInstance(o2)) {
                 double d1 = asDouble(o1);
                 double d2 = asDouble(o2);
                 return new ArithmeticValue(d1 * d2); //Just cast both to double
-            }else { //Both should be integers, since you cant add booleans
-                int i1 = asInt(o1);
-                int i2 = asInt(o2);
-                return new ArithmeticValue(i1 * i2);
+            }else {
+                throw new IllegalArgumentException("num != double?");
             }
         }
     }
@@ -104,16 +98,30 @@ public interface ArithmeticExpr extends Expression{
             ensureNotString(o1, o2);
             ensureNotBoolean(o1, o2);
 
-            if (isDoubleInstance(o1) || isDoubleInstance(o2)){
+            if (isDoubleInstance(o1) || isDoubleInstance(o2)) {
                 double d1 = asDouble(o1);
                 double d2 = asDouble(o2);
                 return new ArithmeticValue(d1 % d2); //Just cast both to double
-            }else { //Both should be integers, since you cant add booleans
-                int i1 = asInt(o1);
-                int i2 = asInt(o2);
-                return new ArithmeticValue(i1 % i2);
+            }else {
+                throw new IllegalArgumentException("num != double?");
             }
 
+        }
+    }
+
+    record Exponential(ArithmeticExpr e1, ArithmeticExpr e2) implements ArithmeticExpr {
+        public ArithmeticValue evaluate() {
+            Object o1 = e1.evaluate().value();
+            Object o2 = e2.evaluate().value();
+            ensureNotString(o1, o2);
+            ensureNotBoolean(o1, o2);
+            if (isDoubleInstance(o1) || isDoubleInstance(o2)) {
+                double d1 = asDouble(o1);
+                double d2 = asDouble(o2);
+                return new ArithmeticValue(Math.pow(d1, d2)); //Just cast both to double
+            }else {
+                throw new IllegalArgumentException("num != double?");
+            }
         }
     }
 }

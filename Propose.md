@@ -3,52 +3,56 @@ import com.github.kusoroadeolu.annote.annotations.End;
 import com.github.kusoroadeolu.annote.annotations.If;
 import com.github.kusoroadeolu.annote.annotations.Return;
 import com.github.kusoroadeolu.annote.annotations.Var;
-
+//Nothing like scope yet, all variables are public regardless of if they were declared in If or Loop blocks
 class Class {
 
-    @Var(name = "x", value = "10", type = "int")
+    @Var(name = "x", value = "10", type = "num")
     //I think this is a bit cleaner, the name of the variable as the annotation value
-    @Var(name = "y", value = "20", type = "int")
+    @Var(name = "y", value = "20", type = "num")
     @Print("x + y")
-    void printAdd() {
+    void prnumAdd() {
 
     }
 
-    @Var(name = "x", value = "10", type = "int")
-    @Var(name = "z", value = "10", type = "int")
+    @Var(name = "x", value = "10", type = "num")
+    @Var(name = "z", value = "10", type = "num")
     @If("x + z > 21")
-    @Return("Here")
+      @Return("Here")
     @Else
-    @Return("There")
+      @Return("There")
     @End
     String ifStatement() {
         return null;
     }
 
-    @Var(name = "x", value = "10", type = "int")
-    @Var(name = "z", value = "10", type = "int")
+    @Var(name = "x", value = "10", type = "num")
+    @Var(name = "z", value = "10", type = "num")
     @If("x + z > 21")
-    @Print("Here")
+      @Print("Here")
     @Else
-    @Print("There")
+      @Print("There")
     @End
-    String ifPrintStatement() {
+    String ifPrnumStatement() {
         return null;
     }
 
-    @Var(name = "x", value = "10", type = "int")
-    @Var(name = "z", value = "10", type = "int")
+    @Var(name = "x", value = "10", type = "num")
+    @Var(name = "z", value = "10", type = "num")
+    @Var(name = "x", value = "x + 10", type = "num")//Reassignment
     @If("x + z > 21")
-    @Return("Here")
-\    String ifPrintStatementWithoutElse() {
+      @Return("Here")
+    @End
+    @Return("Another")
+\    String ifPrnumStatementWithoutElse() {
         return null;
     }
 
-    @Var(name = "name", value = "Victor", type = "int")
+    @Var(name = "name", value = "Victor", type = "string")
+    @Var(name = "name", value = "x >= 2", type = "bool")
     @Loop("name != james")
-    @Print("name")
+      @Print("name")
     @End
-    void printName() {
+    void prnumName() {
     }
 
 }

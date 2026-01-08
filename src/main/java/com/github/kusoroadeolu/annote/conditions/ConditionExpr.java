@@ -1,8 +1,11 @@
-package com.github.kusoroadeolu.annote;
+package com.github.kusoroadeolu.annote.conditions;
+
+import com.github.kusoroadeolu.annote.Expression;
+import com.github.kusoroadeolu.annote.Value;
 
 import static com.github.kusoroadeolu.annote.Utils.*;
 
-public interface ConditionExpr extends Expression{
+public interface ConditionExpr extends Expression {
     Value evaluate();
 
     record BoolValue(Object value) implements ConditionExpr, Value{

@@ -1,8 +1,7 @@
 package com.github.kusoroadeolu.annote;
 
 public enum Type {
-    INT("int"),
-    DOUBLE("double"),
+    NUMBER("num"),
     BOOLEAN("bool"),
     STRING("string");
 
@@ -12,18 +11,18 @@ public enum Type {
         this.value = value;
     }
 
-    static Type fromString(String type){
-        type = type.toLowerCase();
+     static Type fromString(String type){
         return switch (type){
-            case "int" -> Type.INT;
-            case "double" -> Type.DOUBLE;
+            case "num" -> Type.NUMBER;
             case "bool" -> Type.BOOLEAN;
             case "string" -> Type.STRING;
-            default -> throw new IllegalArgumentException();
+            default -> throw new IllegalStateException("Unexpected value: " + type);
         };
     }
 
     public String toString(){
         return value;
     }
+
+
 }
