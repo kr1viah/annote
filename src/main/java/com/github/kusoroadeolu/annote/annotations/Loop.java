@@ -7,4 +7,5 @@ import java.lang.annotation.*;
 @Repeatable(Loops.class)
 public @interface Loop {
     String value() default "true";
+    int order();
 }

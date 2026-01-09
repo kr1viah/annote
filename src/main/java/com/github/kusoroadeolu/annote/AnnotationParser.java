@@ -15,6 +15,7 @@ import java.util.*;
 
 import static com.github.kusoroadeolu.annote.ExceptionSupplier.run;
 import static com.github.kusoroadeolu.annote.Type.fromString;
+import static java.util.Collections.sort;
 
 public class AnnotationParser {
     private final Class<?> clazz;
@@ -26,7 +27,7 @@ public class AnnotationParser {
 
     public Result read(String methodName){
         Method method = run(() -> clazz.getMethod(methodName));
-        Annotation[] annotations = method.getDeclaredAnnotations();
+        Annotation[] annotations = flatten(method.getDeclaredAnnotations());
         var ls = parseAnnotations(annotations);
         Scope rootScope = new Scope(new HashMap<>(), null);
 
@@ -45,53 +46,24 @@ public class AnnotationParser {
         Deque<Block> blockStack = new ArrayDeque<>(); //Keep track of scope
         blockStack.push(new Block(program, null)); // Root stmt
 
+
         for (Annotation a : annotations) {
-            if (a instanceof Ifs ifs) {
-                for (If i : ifs.value()){
-                    handleIfStmt(i, blockStack); // If and Loop statements create a new block (list of statements) during parsing.
-                    // We push that block onto the stack and add statements to it until we see @End.
-                    // At execution time, these blocks also get their own variable scope.
-                }
-            }else if(a instanceof If i){
+             if(a instanceof If i){
                 handleIfStmt(i, blockStack);
             }
-            else if (a instanceof Elses elses) {
-                for (Else e: elses.value()){
-                    handleElse(blockStack);
-                }
-            } else if (a instanceof Else e) {
-                handleElse(blockStack);
-            } else if (a instanceof Ends ends) {
-                for (End e: ends.value()){
-                    blockStack.pop();
-                }
-            } else if (a instanceof End e) {
+             else if (a instanceof Else) {
+                 handleElse(blockStack);
+             } else if (a instanceof End) {
                 blockStack.pop(); //Pop the previous if / while stmt
-            } else if (a instanceof Vars vars) {
-                for (Var v : vars.value()){
-                    handleVar(blockStack, v);
-                }
             } else if (a instanceof Var v) {
                 handleVar(blockStack, v);
-            } else if (a instanceof Prints prints) {
-                for (Print p: prints.value()){
-                    blockStack.peek().add(new Statement.PrintStatement(p.value(), fromString(p.type())));
-                }
-            }else if (a instanceof Print p){
+            } else if (a instanceof Print p){
                 blockStack.peek().add(new Statement.PrintStatement(p.value(), fromString(p.type())));
             }
-            else if (a instanceof Loops loops) {
-                for (Loop l : loops.value()){
-                    handleLoop(blockStack, l);
-                }
-            }else if(a instanceof Loop l){
+            else if(a instanceof Loop l){
                 handleLoop(blockStack, l);
             }
-            else if (a instanceof Returns returns){
-                for (Return r : returns.value()){
-                   handleReturn(blockStack, r);
-                }
-            }else if(a instanceof Return r){
+            else if(a instanceof Return r){
                 handleReturn(blockStack, r);
             }
         }
@@ -99,17 +71,68 @@ public class AnnotationParser {
         return program;
     }
 
+    static Annotation[] flatten(Annotation[] arr){
+        List<OrderedAnnotation> ls = new ArrayList<>();
+        for (Annotation a : arr){
+            if (a instanceof Vars vars) {
+                for (Var v : vars.value()){
+                    ls.add(new OrderedAnnotation(v, v.order()));
+                }
+            } else if (a instanceof Prints prints) {
+                for (Print p : prints.value()){
+                    ls.add(new OrderedAnnotation(p, p.order()));
+                }
+            } else if (a instanceof Ifs ifs) {
+                for (If i : ifs.value()){
+                    ls.add(new OrderedAnnotation(i, i.order()));
+                }
+            }else if (a instanceof Ends ends){
+                for (End e : ends.value()){
+                    ls.add(new OrderedAnnotation(e, e.order()));
+                }
+
+            } else if (a instanceof Loops loops) {
+                for (Loop l : loops.value()){
+                    ls.add(new OrderedAnnotation(l, l.order()));
+                }
+            }else if (a instanceof Returns returns){
+                for (Return r : returns.value()){
+                    ls.add(new OrderedAnnotation(r, r.order()));
+                }
+            }else if(a instanceof Elses elses){
+                for (Else e : elses.value()){
+                    ls.add(new OrderedAnnotation(e, e.order()));
+                }
+            }
+            else {
+                ls.add(new OrderedAnnotation(a, getOrder(a)));
+            }
+        }
+
+        sort(ls); //Sort the list
+        return ls.stream().map(a -> a.a).toArray(Annotation[]::new);
+    }
+
+    private static int getOrder(Annotation a) {
+        try {
+            var method = a.annotationType().getMethod("order");
+            return (int) method.invoke(a);
+        } catch (Exception e) {
+            return Integer.MAX_VALUE;
+        }
+    }
+
     static void handleIfStmt(If i,Deque<Block> blockStack){
-        List<Statement> thenBlock = new ArrayList<>();
+        List<Statement> ifBlock = new ArrayList<>();
         List<Statement> elseBlock = new ArrayList<>();
-        IfStatement ifStmt = new IfStatement(i.value(), thenBlock, elseBlock);
+        IfStatement ifStmt = new IfStatement(i.value(), ifBlock, elseBlock);
         blockStack.peek().add(ifStmt); // Add to current block
-        blockStack.push(new Block(thenBlock, ifStmt));
+        blockStack.push(new Block(ifStmt.ifBlock(), ifStmt));
     }
 
     static void handleElse(Deque<Block> blockStack){
-        Block thenBuilder = blockStack.pop();
-        IfStatement ifStmt = (IfStatement) thenBuilder.parentStatement();
+        Block ifBlock = blockStack.pop(); //Remove the if statements and replace with else statements
+        IfStatement ifStmt = (IfStatement) ifBlock.parentStatement();
         blockStack.push(new Block(ifStmt.elseBlock(), ifStmt));
     }
 
@@ -128,5 +151,12 @@ public class AnnotationParser {
     static void handleReturn(Deque<Block> blockStack, Return r){
         ReturnStatement statement = new ReturnStatement(r.value(), Type.fromString(r.type()));
         blockStack.peek().add(statement);
+    }
+
+    record OrderedAnnotation(Annotation a, Integer i) implements Comparable<OrderedAnnotation>{
+        @Override
+        public int compareTo(OrderedAnnotation o) {
+            return i.compareTo(o.i);
+        }
     }
 }

@@ -9,4 +9,5 @@ public @interface Var {
     String name(); //Name of the variable
     String value();
     String type();
+    int order() default 0;
 }

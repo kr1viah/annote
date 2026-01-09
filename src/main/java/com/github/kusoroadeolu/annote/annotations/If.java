@@ -7,4 +7,5 @@ import java.lang.annotation.*;
 @Repeatable(Ifs.class)
 public @interface If {
     String value();
+    int order();
 }

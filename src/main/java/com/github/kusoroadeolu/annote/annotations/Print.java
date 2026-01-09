@@ -8,4 +8,5 @@ import java.lang.annotation.*;
 public @interface Print {
     String value();
     String type() default "string";
+    int order();
 }

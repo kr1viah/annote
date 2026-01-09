@@ -6,4 +6,5 @@ import java.lang.annotation.*;
 @Target(ElementType.METHOD)
 @Repeatable(Elses.class)
 public @interface Else {
+    int order();
 }
