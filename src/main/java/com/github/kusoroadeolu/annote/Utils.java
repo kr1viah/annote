@@ -1,15 +1,22 @@
 package com.github.kusoroadeolu.annote;
 
+import com.github.kusoroadeolu.annote.annotations.Print;
+import com.github.kusoroadeolu.annote.annotations.Var;
 import com.github.kusoroadeolu.annote.math.ArithmeticExpr;
+import com.github.kusoroadeolu.annote.math.MathParser;
+import com.github.kusoroadeolu.annote.statements.Variable;
 import com.github.kusoroadeolu.annote.tokenizer.Operator;
 
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Pattern;
 
 import static java.lang.IO.println;
 
 public class Utils {
 
-    private final static Set<String> INVALID_CHARS = Set.of("|", "&", "=");
+    private static final Pattern P = Pattern.compile("\\b");
 
     public static boolean isDoubleInstance(Object o){
         return o instanceof Double;
@@ -40,9 +47,6 @@ public class Utils {
         return ((Number)o).doubleValue();
     }
 
-    public static boolean isInvalidChar(char c){
-        return INVALID_CHARS.contains(String.valueOf(c));
-    }
 
     public static int asInt(Object o){
         return ((Number)o).intValue();
@@ -67,6 +71,23 @@ public class Utils {
             case EXPONENTIAL -> new ArithmeticExpr.Exponential(e1, e2);
             default -> throw new IllegalArgumentException("??");
         };
+    }
+
+
+    public static String insertVariables(String original, Map<String, Variable> map) {
+        original = original.replaceAll("\\s++", "");
+
+        List<String> varNames = new ArrayList<>(map.keySet());
+        varNames.sort((a, b) -> b.length() - a.length());
+
+        for (String varName : varNames) {
+            original = original.replaceAll(
+                    P.pattern() + Pattern.quote(varName) + P.pattern(),
+                    map.get(varName).obj().toString()
+            );
+        }
+
+        return original;
     }
 
 }

@@ -11,6 +11,18 @@ public enum Type {
         this.value = value;
     }
 
+    public boolean isNum(){
+        return this == NUMBER;
+    }
+
+    public boolean isBool(){
+        return this == BOOLEAN;
+    }
+
+    public boolean isString(){
+        return this == STRING;
+    }
+
      static Type fromString(String type){
         return switch (type){
             case "num" -> Type.NUMBER;

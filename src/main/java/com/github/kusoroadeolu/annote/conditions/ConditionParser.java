@@ -20,13 +20,13 @@ import static com.github.kusoroadeolu.annote.Utils.asBoolean;
 
 public class ConditionParser {
 
-    private final SymbolTokenizer tokenizer = new SymbolTokenizer();
+    private static final SymbolTokenizer TOKENIZER = new SymbolTokenizer();
 
-    public boolean parse(String s) {
-        if (s.equals("true")) return true;
-        else if(s.equals("false")) return false;
+    public static Expression parse(String s) {
+        if (s.equals("true")) return new BoolValue(true);
+        else if(s.equals("false")) return new BoolValue(false);
 
-        List<Token> tokens = tokenizer.reform(s);
+        List<Token> tokens = TOKENIZER.reform(s);
         Deque<Expression> dq = new ArrayDeque<>();
         for (Token t : tokens){
             if (t.isNumber()) dq.push(new ArithmeticValue(t.o()));
@@ -54,7 +54,7 @@ public class ConditionParser {
         }
 
 
-        return asBoolean(dq.pop().evaluate().value());
+        return dq.pop();
     }
 
 

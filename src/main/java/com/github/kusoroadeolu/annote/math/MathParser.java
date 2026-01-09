@@ -1,5 +1,6 @@
 package com.github.kusoroadeolu.annote.math;
 
+import com.github.kusoroadeolu.annote.Expression;
 import com.github.kusoroadeolu.annote.Utils;
 import com.github.kusoroadeolu.annote.tokenizer.Operator;
 import com.github.kusoroadeolu.annote.tokenizer.SymbolTokenizer;
@@ -13,10 +14,10 @@ import static com.github.kusoroadeolu.annote.Utils.asDouble;
 
 public class MathParser {
 
-    private final SymbolTokenizer tokenizer = new SymbolTokenizer();
+    private final static SymbolTokenizer TOKENIZER = new SymbolTokenizer();
 
-    public double parse(String s) {
-        List<Token> tokens = tokenizer.reform(s);
+    public static Expression parse(String s) {
+        List<Token> tokens = TOKENIZER.reform(s);
         Deque<ArithmeticExpr> dq = new ArrayDeque<>();
         for (Token t : tokens){
             if (t.isNumber()) dq.push(new ArithmeticExpr.ArithmeticValue(asDouble(t.o())));
@@ -26,7 +27,7 @@ public class MathParser {
                 dq.push(Utils.eval(e1, e2, (Operator) t.o()));
             }
         }
-        return asDouble(dq.pop().evaluate().value());
+        return dq.pop();
     }
 
 

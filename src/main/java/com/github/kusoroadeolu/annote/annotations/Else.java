@@ -4,8 +4,6 @@ import java.lang.annotation.*;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-@Repeatable(Prints.class)
-public @interface Print {
-    String value();
-    String type() default "string";
+@Repeatable(Elses.class)
+public @interface Else {
 }
