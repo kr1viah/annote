@@ -10,6 +10,6 @@ public class Test {
     @If(value = "var3 == 4", order = 4)
         @Print(value = "hello", order = 5)
     @Else(order = 6)
-        @Print(value = "Nahh", order = 7)
+        @Yeet(value = "Bozo", order = 7)
     public void smth(){}
 }

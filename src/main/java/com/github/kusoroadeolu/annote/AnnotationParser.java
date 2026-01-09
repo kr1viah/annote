@@ -1,6 +1,7 @@
 package com.github.kusoroadeolu.annote;
 
 import com.github.kusoroadeolu.annote.annotations.*;
+import com.github.kusoroadeolu.annote.exception.AnnoteException;
 import com.github.kusoroadeolu.annote.statements.Block;
 import com.github.kusoroadeolu.annote.statements.Result;
 import com.github.kusoroadeolu.annote.statements.Scope;
@@ -8,6 +9,7 @@ import com.github.kusoroadeolu.annote.statements.Statement;
 import com.github.kusoroadeolu.annote.statements.Statement.IfStatement;
 import com.github.kusoroadeolu.annote.statements.Statement.LoopStatement;
 import com.github.kusoroadeolu.annote.statements.Statement.ReturnStatement;
+import com.github.kusoroadeolu.annote.statements.Statement.YeetStatement;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -46,12 +48,10 @@ public class AnnotationParser {
         Deque<Block> blockStack = new ArrayDeque<>(); //Keep track of scope
         blockStack.push(new Block(program, null)); // Root stmt
 
-
         for (Annotation a : annotations) {
              if(a instanceof If i){
                 handleIfStmt(i, blockStack);
-            }
-             else if (a instanceof Else) {
+            } else if (a instanceof Else) {
                  handleElse(blockStack);
              } else if (a instanceof End) {
                 blockStack.pop(); //Pop the previous if / while stmt
@@ -59,15 +59,15 @@ public class AnnotationParser {
                 handleVar(blockStack, v);
             } else if (a instanceof Print p){
                 blockStack.peek().add(new Statement.PrintStatement(p.value(), fromString(p.type())));
-            }
-            else if(a instanceof Loop l){
+            } else if(a instanceof Loop l){
                 handleLoop(blockStack, l);
-            }
-            else if(a instanceof Return r){
+            } else if(a instanceof Return r){
                 handleReturn(blockStack, r);
-            }
+            }else if (a instanceof Yeet y){
+                 ensureNotReturn(blockStack);
+                 blockStack.peek().add(new YeetStatement(y.value()));
+             }
         }
-
         return program;
     }
 
@@ -103,6 +103,10 @@ public class AnnotationParser {
                 for (Else e : elses.value()){
                     ls.add(new OrderedAnnotation(e, e.order()));
                 }
+            }else if (a instanceof Yeets yeets){
+                for (Yeet e : yeets.value()){
+                    ls.add(new OrderedAnnotation(e, e.order()));
+                }
             }
             else {
                 ls.add(new OrderedAnnotation(a, getOrder(a)));
@@ -123,6 +127,7 @@ public class AnnotationParser {
     }
 
     static void handleIfStmt(If i,Deque<Block> blockStack){
+        ensureNotReturn(blockStack);
         List<Statement> ifBlock = new ArrayList<>();
         List<Statement> elseBlock = new ArrayList<>();
         IfStatement ifStmt = new IfStatement(i.value(), ifBlock, elseBlock);
@@ -137,11 +142,13 @@ public class AnnotationParser {
     }
 
     static void handleVar(Deque<Block> blockStack, Var v){
+        ensureNotReturn(blockStack);
         Statement varDecl = new Statement.VarDeclaration(v.name(), fromString(v.type()), v.value());
         blockStack.peek().add(varDecl);
     }
 
     static void handleLoop(Deque<Block> blockStack, Loop l){
+        ensureNotReturn(blockStack);
         List<Statement> body = new ArrayList<>();
         LoopStatement loopStmt = new LoopStatement(l.value(), body);
         blockStack.peek().add(loopStmt);
@@ -149,6 +156,7 @@ public class AnnotationParser {
     }
 
     static void handleReturn(Deque<Block> blockStack, Return r){
+        ensureNotReturn(blockStack);
         ReturnStatement statement = new ReturnStatement(r.value(), Type.fromString(r.type()));
         blockStack.peek().add(statement);
     }
@@ -158,5 +166,10 @@ public class AnnotationParser {
         public int compareTo(OrderedAnnotation o) {
             return i.compareTo(o.i);
         }
+    }
+
+    static void ensureNotReturn(Deque<Block> dq){
+        Statement s = dq.peek().currentBlock().getLast();
+        if (s instanceof ReturnStatement) throw new AnnoteException("Cannot add more statements after a return statement");
     }
 }

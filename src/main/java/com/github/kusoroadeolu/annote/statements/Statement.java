@@ -85,4 +85,11 @@ public interface Statement {
             return new ReturnValue(expression.evaluate().value());
         }
     }
+
+    record YeetStatement(String value) implements Statement{
+        @Override
+        public Result execute(Scope scope) {
+            throw new RuntimeException(value);
+        }
+    }
 }
