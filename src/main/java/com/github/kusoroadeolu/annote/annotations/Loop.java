@@ -8,6 +8,6 @@ import java.lang.annotation.*;
 @Target(ElementType.METHOD)
 @Repeatable(Loops.class)
 public @interface Loop {
-    String value() default "true";
+    String condition() default "true";
     int order();
 }

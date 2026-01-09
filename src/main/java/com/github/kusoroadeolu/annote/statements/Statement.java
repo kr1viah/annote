@@ -1,9 +1,11 @@
 package com.github.kusoroadeolu.annote.statements;
 
+import com.github.kusoroadeolu.annote.AnnotationParser;
 import com.github.kusoroadeolu.annote.Expression;
 import com.github.kusoroadeolu.annote.Type;
 import com.github.kusoroadeolu.annote.Utils;
 import com.github.kusoroadeolu.annote.conditions.ConditionParser;
+import com.github.kusoroadeolu.annote.exception.AnnoteException;
 import com.github.kusoroadeolu.annote.math.ArithmeticExpr;
 import com.github.kusoroadeolu.annote.math.ArithmeticExpr.ArithmeticValue;
 import com.github.kusoroadeolu.annote.math.MathParser;
@@ -130,7 +132,21 @@ public interface Statement {
             scope.put(name, new Variable(STRING, expr.evaluate().value()));
             return new None();
         }
+    }
 
+    record CallStatement(String methodName, String type, String assignTo, Class<?> clazz) implements Statement{
+        @Override
+        public Result execute(Scope scope) {
+            if (methodName.isBlank()) throw new AnnoteException("Method name cannot be empty");
+            AnnotationParser ap = new AnnotationParser(clazz);
+            Result r = ap.read(methodName);
+            if (!type.equalsIgnoreCase("void") && (r instanceof ReturnValue(Object value))){
+                Type t = Type.fromString(type);
+                scope.put(assignTo, new Variable(t, value));
+                return r;
+            }
 
+            return new None();
+        }
     }
 }

@@ -8,6 +8,6 @@ import java.lang.annotation.*;
 @Target(ElementType.METHOD)
 @Repeatable(Ifs.class)
 public @interface If {
-    String value();
+    String condition();
     int order();
 }

@@ -3,6 +3,7 @@ import com.github.kusoroadeolu.annote.annotations.End;
 import com.github.kusoroadeolu.annote.annotations.If;
 import com.github.kusoroadeolu.annote.annotations.Return;
 import com.github.kusoroadeolu.annote.annotations.Var;
+
 //Nothing like scope yet, all variables are public regardless of if they were declared in If or Loop blocks
 class Class {
 
@@ -16,10 +17,10 @@ class Class {
 
     @Var(name = "x", value = "10", type = "num")
     @Var(name = "z", value = "10", type = "num")
-    @If("x + z > 21")
-      @Return("Here")
+    @If(condition = "x + z > 21")
+    @Return("Here")
     @Else
-      @Return("There")
+    @Return("There")
     @End
     String ifStatement() {
         return null;
@@ -27,10 +28,10 @@ class Class {
 
     @Var(name = "x", value = "10", type = "num")
     @Var(name = "z", value = "10", type = "num")
-    @If("x + z > 21")
-      @Print("Here")
+    @If(condition = "x + z > 21")
+    @Print("Here")
     @Else
-      @Print("There")
+    @Print("There")
     @End
     String ifPrnumStatement() {
         return null;
@@ -39,18 +40,20 @@ class Class {
     @Var(name = "x", value = "10", type = "num")
     @Var(name = "z", value = "10", type = "num")
     @Var(name = "x", value = "x + 10", type = "num")//Reassignment
-    @If("x + z > 21")
-      @Return("Here")
+    @If(condition = "x + z > 21")
+    @Return("Here")
     @End
     @Return("Another")
-\    String ifPrnumStatementWithoutElse() {
+\
+
+    String ifPrnumStatementWithoutElse() {
         return null;
     }
 
     @Var(name = "name", value = "Victor", type = "string")
     @Var(name = "name", value = "x >= 2", type = "bool")
     @Loop("name != james")
-      @Print("name")
+    @Print("name")
     @End
     void prnumName() {
     }

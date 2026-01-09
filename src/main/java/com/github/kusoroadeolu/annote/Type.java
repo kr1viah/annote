@@ -23,7 +23,7 @@ public enum Type {
         return this == STRING;
     }
 
-     static Type fromString(String type){
+     public static Type fromString(String type){
         return switch (type){
             case "num" -> Type.NUMBER;
             case "bool" -> Type.BOOLEAN;

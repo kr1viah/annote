@@ -1,5 +1,7 @@
 package com.github.kusoroadeolu.annote;
 
+import com.github.kusoroadeolu.annote.exception.AnnoteException;
+
 public interface ExceptionSupplier<E> {
     E supply() throws Exception;
 
@@ -7,7 +9,7 @@ public interface ExceptionSupplier<E> {
         try {
             return supplier.supply();
         }catch (Exception e){
-            throw new RuntimeException(e);
+            throw new AnnoteException(e);
         }
     }
 }

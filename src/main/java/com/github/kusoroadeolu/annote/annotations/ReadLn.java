@@ -9,7 +9,7 @@ import java.lang.annotation.*;
 @Repeatable(ReadLns.class)
 public @interface ReadLn {
     String prompt();
-    String name();
+    String assignTo();
     String type();
     int order();
 }

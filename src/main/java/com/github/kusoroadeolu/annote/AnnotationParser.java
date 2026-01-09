@@ -4,6 +4,8 @@ import com.github.kusoroadeolu.annote.annotations.*;
 import com.github.kusoroadeolu.annote.annotations.containers.*;
 import com.github.kusoroadeolu.annote.statements.Block;
 import com.github.kusoroadeolu.annote.statements.Result;
+import com.github.kusoroadeolu.annote.statements.Result.None;
+import com.github.kusoroadeolu.annote.statements.Result.ReturnValue;
 import com.github.kusoroadeolu.annote.statements.Scope;
 import com.github.kusoroadeolu.annote.statements.Statement;
 import com.github.kusoroadeolu.annote.statements.Statement.*;
@@ -23,15 +25,15 @@ public record AnnotationParser(Class<?> clazz) {
         Annotation[] annotations = flatten(method.getDeclaredAnnotations());
         var ls = parseAnnotations(annotations);
         Scope rootScope = new Scope(new HashMap<>(), null);
-
+        Result rs = new None();
         for (Statement stmt : ls) {
             Result result = stmt.execute(rootScope);
-            if (result instanceof Result.ReturnValue rv) {
-                return rv;
+            if (result instanceof ReturnValue rv) {
+                rs = rv;
             }
         }
 
-        return new Result.None();
+        return rs;
     }
 
     public static List<Statement> parseAnnotations(Annotation[] annotations) {
@@ -57,9 +59,11 @@ public record AnnotationParser(Class<?> clazz) {
             } else if (a instanceof Yeet y) {
                 blockStack.peek().add(new YeetStatement(y.value()));
             }else if (a instanceof ReadLn r){
-                blockStack.peek().add(new ReadLnStatement(r.prompt(), r.name(), fromString(r.type())));
+                blockStack.peek().add(new ReadLnStatement(r.prompt(), r.assignTo(), fromString(r.type())));
             }else if (a instanceof Concat c){
-                blockStack.peek().add(new ConcatStatement(c.value(), c.name()));
+                blockStack.peek().add(new ConcatStatement(c.value(), c.assignTo()));
+            }else if (a instanceof Call c){
+                blockStack.peek().add(new CallStatement(c.methodName(), c.returnType(), c.assignTo(), c.clazz()));
             }
         }
         return program;
@@ -106,9 +110,14 @@ public record AnnotationParser(Class<?> clazz) {
                     ls.add(new OrderedAnnotation(r, r.order()));
                 }
             } else if (a instanceof Concats concats) {
-                for (Concat c : concats.value()){
+                for (Concat c : concats.value()) {
                     ls.add(new OrderedAnnotation(c, c.order()));
                 }
+            } else if (a instanceof Calls calls) {
+                for (Call c : calls.value()){
+                    ls.add(new OrderedAnnotation(c, c.order()));
+                }
+
             } else {
                 ls.add(new OrderedAnnotation(a, getOrder(a)));
             }
@@ -130,7 +139,7 @@ public record AnnotationParser(Class<?> clazz) {
     static void handleIfStmt(If i, Deque<Block> blockStack) {
         List<Statement> ifBlock = new ArrayList<>();
         List<Statement> elseBlock = new ArrayList<>();
-        IfStatement ifStmt = new IfStatement(i.value(), ifBlock, elseBlock);
+        IfStatement ifStmt = new IfStatement(i.condition(), ifBlock, elseBlock);
         blockStack.peek().add(ifStmt); // Add to current block
         blockStack.push(new Block(ifStmt.ifBlock(), ifStmt));
     }
@@ -148,7 +157,7 @@ public record AnnotationParser(Class<?> clazz) {
 
     static void handleLoop(Deque<Block> blockStack, Loop l) {
         List<Statement> body = new ArrayList<>();
-        LoopStatement loopStmt = new LoopStatement(l.value(), body);
+        LoopStatement loopStmt = new LoopStatement(l.condition(), body);
         blockStack.peek().add(loopStmt);
         blockStack.push(new Block(body, loopStmt));
     }

@@ -8,7 +8,7 @@ import java.lang.annotation.*;
 @Target(ElementType.METHOD)
 @Repeatable(Concats.class)
 public @interface Concat {
-    String name();
+    String assignTo();
     String[] value();
     int order();
 }
