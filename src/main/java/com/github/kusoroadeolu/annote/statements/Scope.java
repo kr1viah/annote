@@ -1,5 +1,7 @@
 package com.github.kusoroadeolu.annote.statements;
 
+import com.github.kusoroadeolu.annote.exception.AnnoteException;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -10,6 +12,7 @@ public record Scope(Map<String, Variable> variables, Scope parent) {
     }
 
     public Variable get(String name) {
+        if (name.isBlank()) throw new AnnoteException("Variable name cannot be empty");
         Variable v = variables.get(name);
         if (v != null) return v;
         if (parent != null) return parent.get(name);

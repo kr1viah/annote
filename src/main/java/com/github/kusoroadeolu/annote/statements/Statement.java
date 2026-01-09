@@ -77,7 +77,7 @@ public interface Statement {
         @Override
         public Result execute(Scope scope) {
             Scope inner = scope.newScope();
-            Expression condition = getExpr(string, scope, BOOLEAN);
+            Expression condition = getExpr(string, inner, BOOLEAN);
             while (asBoolean(condition.evaluate().value())){
                 for (Statement s : body) {
                     Result result = s.execute(inner);
@@ -85,6 +85,7 @@ public interface Statement {
                         return result;
                     }
                 }
+                condition = getExpr(string, inner, BOOLEAN);
             }
 
             return new None();
