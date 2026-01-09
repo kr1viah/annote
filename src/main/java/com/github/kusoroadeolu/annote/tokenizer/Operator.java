@@ -1,5 +1,7 @@
 package com.github.kusoroadeolu.annote.tokenizer;
 
+import com.github.kusoroadeolu.annote.exception.AnnoteException;
+
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
@@ -31,7 +33,7 @@ public enum Operator implements Symbol{
 
     public static Operator fromChar(char c){
         Operator o = OPERATOR_MAP.get(String.valueOf(c));
-        if (o == null) throw new IllegalArgumentException("Operator of symbol: %s not found".formatted(c));
+        if (o == null) throw new AnnoteException("Operator of symbol: %s not found".formatted(c));
         return o;
     }
 

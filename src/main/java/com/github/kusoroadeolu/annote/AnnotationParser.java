@@ -36,7 +36,7 @@ public class AnnotationParser {
         for (Statement stmt : ls) {
             Result result = stmt.execute(rootScope);
             if (result instanceof Result.ReturnValue rv) {
-                return rv; // or handle the return
+                return rv;
             }
         }
 
@@ -64,7 +64,6 @@ public class AnnotationParser {
             } else if(a instanceof Return r){
                 handleReturn(blockStack, r);
             }else if (a instanceof Yeet y){
-                 ensureNotReturn(blockStack);
                  blockStack.peek().add(new YeetStatement(y.value()));
              }
         }
@@ -127,7 +126,6 @@ public class AnnotationParser {
     }
 
     static void handleIfStmt(If i,Deque<Block> blockStack){
-        ensureNotReturn(blockStack);
         List<Statement> ifBlock = new ArrayList<>();
         List<Statement> elseBlock = new ArrayList<>();
         IfStatement ifStmt = new IfStatement(i.value(), ifBlock, elseBlock);
@@ -142,13 +140,11 @@ public class AnnotationParser {
     }
 
     static void handleVar(Deque<Block> blockStack, Var v){
-        ensureNotReturn(blockStack);
         Statement varDecl = new Statement.VarDeclaration(v.name(), fromString(v.type()), v.value());
         blockStack.peek().add(varDecl);
     }
 
     static void handleLoop(Deque<Block> blockStack, Loop l){
-        ensureNotReturn(blockStack);
         List<Statement> body = new ArrayList<>();
         LoopStatement loopStmt = new LoopStatement(l.value(), body);
         blockStack.peek().add(loopStmt);
@@ -156,7 +152,6 @@ public class AnnotationParser {
     }
 
     static void handleReturn(Deque<Block> blockStack, Return r){
-        ensureNotReturn(blockStack);
         ReturnStatement statement = new ReturnStatement(r.value(), Type.fromString(r.type()));
         blockStack.peek().add(statement);
     }
@@ -168,8 +163,4 @@ public class AnnotationParser {
         }
     }
 
-    static void ensureNotReturn(Deque<Block> dq){
-        Statement s = dq.peek().currentBlock().getLast();
-        if (s instanceof ReturnStatement) throw new AnnoteException("Cannot add more statements after a return statement");
-    }
 }

@@ -1,5 +1,7 @@
 package com.github.kusoroadeolu.annote.tokenizer;
 
+import com.github.kusoroadeolu.annote.exception.AnnoteException;
+
 import java.util.Arrays;
 import java.util.Map;
 import java.util.function.Function;
@@ -39,7 +41,7 @@ public enum Condition implements Symbol{
 
     public static Condition fromString(String symbol) {
         Condition c = CONDITION_MAP.get(symbol);
-        if (c == null) throw new IllegalArgumentException("Symbol: %s, not found".formatted(symbol));
+        if (c == null) throw new AnnoteException("Symbol: %s, not found".formatted(symbol));
         return c;
     }
 

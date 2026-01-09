@@ -2,6 +2,7 @@ package com.github.kusoroadeolu.annote.math;
 
 import com.github.kusoroadeolu.annote.Expression;
 import com.github.kusoroadeolu.annote.Value;
+import com.github.kusoroadeolu.annote.exception.AnnoteException;
 
 import static com.github.kusoroadeolu.annote.Utils.*;
 
@@ -31,7 +32,7 @@ public interface ArithmeticExpr extends Expression {
                 double d2 = asDouble(o2);
                 return new ArithmeticValue(d1 + d2); //Just cast both to double
             }else { //Both should be integers, since you cant add booleans
-                throw new IllegalArgumentException("Received values o1: %s, o2: %s".formatted(o1, o2));
+                throw new AnnoteException("Received values o1: %s, o2: %s".formatted(o1, o2));
             }
 
         }
@@ -51,7 +52,7 @@ public interface ArithmeticExpr extends Expression {
                 double d2 = asDouble(o2);
                 return new ArithmeticValue(d1 - d2); //Just cast both to double
             }else {
-                throw new IllegalArgumentException("num != double?");
+                throw new AnnoteException("num != double?");
             }
 
         }
@@ -69,7 +70,7 @@ public interface ArithmeticExpr extends Expression {
                 double d2 = asDouble(o2);
                 return new ArithmeticValue(d1/d2); //Just cast both to double
             }else {
-                throw new IllegalArgumentException("num != double?");
+                throw new AnnoteException("num != double?");
             }
         }
     }
@@ -86,7 +87,7 @@ public interface ArithmeticExpr extends Expression {
                 double d2 = asDouble(o2);
                 return new ArithmeticValue(d1 * d2); //Just cast both to double
             }else {
-                throw new IllegalArgumentException("num != double?");
+                throw new AnnoteException("num != double?");
             }
         }
     }
@@ -103,7 +104,7 @@ public interface ArithmeticExpr extends Expression {
                 double d2 = asDouble(o2);
                 return new ArithmeticValue(d1 % d2); //Just cast both to double
             }else {
-                throw new IllegalArgumentException("num != double?");
+                throw new AnnoteException("num != double?");
             }
 
         }
@@ -120,7 +121,7 @@ public interface ArithmeticExpr extends Expression {
                 double d2 = asDouble(o2);
                 return new ArithmeticValue(Math.pow(d1, d2)); //Just cast both to double
             }else {
-                throw new IllegalArgumentException("num != double?");
+                throw new AnnoteException("num != double?");
             }
         }
     }

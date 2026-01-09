@@ -6,7 +6,7 @@ import java.util.Map;
 public record Scope(Map<String, Variable> variables, Scope parent) {
 
     public Scope newScope() {
-        return new Scope(new HashMap<>(), this);
+        return new Scope(new HashMap<>(variables), this);
     }
 
     public Variable get(String name) {
