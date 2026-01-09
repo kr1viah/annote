@@ -125,7 +125,7 @@ We rejected those assumptions.
 ## Usage
 
 ```java
-AnnotationParser parser = new AnnotationParser(YourClass.class);
+AnnoteRunner runner = AnnoteRunner.newRunner(SomeClass.class);
 Result result = parser.read("yourMethod");
 
 if (result instanceof Result.ReturnValue rv) {

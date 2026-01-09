@@ -1,8 +1,8 @@
-package com.github.kusoroadeolu.annote;
+package com.github.kusoroadeolu.annote.statements;
 
+import com.github.kusoroadeolu.annote.Type;
 import com.github.kusoroadeolu.annote.annotations.*;
 import com.github.kusoroadeolu.annote.annotations.containers.*;
-import com.github.kusoroadeolu.annote.statements.*;
 import com.github.kusoroadeolu.annote.statements.Result.None;
 import com.github.kusoroadeolu.annote.statements.Result.ReturnValue;
 import com.github.kusoroadeolu.annote.statements.Statement.*;

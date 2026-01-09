@@ -17,6 +17,8 @@ public class Utils {
     private static final Pattern BOUNDARY = Pattern.compile("\\b");
     private static final Pattern NEW_LINE = Pattern.compile("\\s+");
 
+    private Utils(){throw new AssertionError("can't instantiate this, i think?");}
+
     public static boolean isDoubleInstance(Object o){
         return o instanceof Double;
     }

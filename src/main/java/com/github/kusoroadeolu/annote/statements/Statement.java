@@ -1,6 +1,5 @@
 package com.github.kusoroadeolu.annote.statements;
 
-import com.github.kusoroadeolu.annote.AnnotationParser;
 import com.github.kusoroadeolu.annote.Expression;
 import com.github.kusoroadeolu.annote.Type;
 import com.github.kusoroadeolu.annote.Utils;
