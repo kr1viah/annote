@@ -1,4 +1,6 @@
-package com.github.kusoroadeolu.annote.annotations;
+package com.github.kusoroadeolu.annote.annotations.containers;
+
+import com.github.kusoroadeolu.annote.annotations.Var;
 
 import java.lang.annotation.*;
 

@@ -1,9 +1,7 @@
 package com.github.kusoroadeolu.annote;
 
-import com.github.kusoroadeolu.annote.annotations.Print;
-import com.github.kusoroadeolu.annote.annotations.Var;
+import com.github.kusoroadeolu.annote.exception.AnnoteException;
 import com.github.kusoroadeolu.annote.math.ArithmeticExpr;
-import com.github.kusoroadeolu.annote.math.MathParser;
 import com.github.kusoroadeolu.annote.statements.Variable;
 import com.github.kusoroadeolu.annote.tokenizer.Operator;
 
@@ -16,7 +14,8 @@ import static java.lang.IO.println;
 
 public class Utils {
 
-    private static final Pattern P = Pattern.compile("\\b");
+    private static final Pattern BOUNDARY = Pattern.compile("\\b");
+    private static final Pattern NEW_LINE = Pattern.compile("\\s+");
 
     public static boolean isDoubleInstance(Object o){
         return o instanceof Double;
@@ -69,21 +68,24 @@ public class Utils {
             case MULTIPLY -> new ArithmeticExpr.Multiply(e1, e2);
             case MODULO -> new ArithmeticExpr.Modulo(e1, e2);
             case EXPONENTIAL -> new ArithmeticExpr.Exponential(e1, e2);
-            default -> throw new IllegalArgumentException("??");
+            default -> throw new AnnoteException("Operator: %s not found".formatted(operator));
         };
     }
 
 
     public static String insertVariables(String original, Map<String, Variable> map) {
-        original = original.replaceAll("\\s++", "");
+        original = original.replaceAll(NEW_LINE.pattern(), "");
 
         List<String> varNames = new ArrayList<>(map.keySet());
         varNames.sort((a, b) -> b.length() - a.length());
 
         for (String varName : varNames) {
+            Variable variable = map.get(varName);
+            if (variable == null) throw new AnnoteException("Variable: %s doesnt exist in this scope".formatted(varName));
+            Object o = variable.obj();
             original = original.replaceAll(
-                    P.pattern() + Pattern.quote(varName) + P.pattern(),
-                    map.get(varName).obj().toString()
+                    BOUNDARY.pattern() + Pattern.quote(varName) + BOUNDARY.pattern(),
+                    o.toString()
             );
         }
 

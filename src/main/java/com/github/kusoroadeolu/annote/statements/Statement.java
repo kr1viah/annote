@@ -5,6 +5,7 @@ import com.github.kusoroadeolu.annote.Type;
 import com.github.kusoroadeolu.annote.Utils;
 import com.github.kusoroadeolu.annote.conditions.ConditionParser;
 import com.github.kusoroadeolu.annote.math.ArithmeticExpr;
+import com.github.kusoroadeolu.annote.math.ArithmeticExpr.ArithmeticValue;
 import com.github.kusoroadeolu.annote.math.MathParser;
 import com.github.kusoroadeolu.annote.statements.Result.None;
 import com.github.kusoroadeolu.annote.statements.Result.ReturnValue;
@@ -14,24 +15,32 @@ import java.util.List;
 import static com.github.kusoroadeolu.annote.Type.*;
 import static com.github.kusoroadeolu.annote.Utils.asBoolean;
 import static com.github.kusoroadeolu.annote.Utils.print;
+import static java.lang.String.valueOf;
 
 //Strings are immutable, cannot be concat, how to
 public interface Statement {
    Result execute(Scope scope);
 
-   default Expression expr(String string, Scope scope  ,Type type){
+   default Expression getExpr(String string, Scope scope  , Type type){
        String rebuilt = Utils.insertVariables(string, scope.variables());
        return switch (type){
            case NUMBER -> MathParser.parse(rebuilt);
            case BOOLEAN -> ConditionParser.parse(rebuilt);
-           case STRING -> new ArithmeticExpr.ArithmeticValue(string);
+           case STRING -> new ArithmeticValue(string);
        };
    }
+
+    default String getValue(String str, Scope s){
+        Variable v = s.get(str);
+        return (v == null) ? str : valueOf(v.obj());
+    }
+
+
      record VarDeclaration(String name, Type type, String string) implements Statement{
         @Override
         public Result execute(Scope scope) {
-            Expression expr = expr(string, scope, type);
-            scope.variables().put(name, new Variable(type, expr.evaluate().value()));
+            Expression expr = getExpr(string, scope, type);
+            scope.put(name, new Variable(type, expr.evaluate().value()));
             return new None();
         }
     }
@@ -39,7 +48,7 @@ public interface Statement {
     record IfStatement(String string, List<Statement> ifBlock, List<Statement> elseBlock) implements Statement {
         @Override
         public Result execute(Scope scope) {
-            Expression condition = expr(string, scope, BOOLEAN);
+            Expression condition = getExpr(string, scope, BOOLEAN);
             List<Statement> block = asBoolean(condition.evaluate().value()) ? ifBlock : elseBlock;
             Scope inner = scope.newScope();
             for (Statement s : block) {
@@ -55,8 +64,10 @@ public interface Statement {
     record PrintStatement(String string, Type type) implements Statement {
         @Override
         public Result execute(Scope scope) {
-            Expression expression = expr(string, scope, type);
-            print(expression.evaluate().value());
+            Expression expression = getExpr(string, scope, type);
+            Object o = expression.evaluate().value();
+            if (o instanceof String s) print(getValue(s, scope));
+            else print(o);
             return new None();
         }
     }
@@ -64,7 +75,7 @@ public interface Statement {
         @Override
         public Result execute(Scope scope) {
             Scope inner = scope.newScope();
-            Expression condition = expr(string, scope, BOOLEAN);
+            Expression condition = getExpr(string, scope, BOOLEAN);
             while (asBoolean(condition.evaluate().value())){
                 for (Statement s : body) {
                     Result result = s.execute(inner);
@@ -81,7 +92,7 @@ public interface Statement {
     record ReturnStatement(String string, Type type) implements Statement{
         @Override
         public Result execute(Scope scope) {
-            Expression expression = expr(string, scope, type);
+            Expression expression = getExpr(string, scope, type);
             return new ReturnValue(expression.evaluate().value());
         }
     }
@@ -91,5 +102,35 @@ public interface Statement {
         public Result execute(Scope scope) {
             throw new RuntimeException(value);
         }
+    }
+
+    record ReadLnStatement(String prompt, String name, Type type) implements Statement{
+        @Override
+        public Result execute(Scope scope) {
+            String s = IO.readln(prompt);
+            Expression e = getExpr(s, scope, type);
+            scope.put(name, new Variable(type, e.evaluate().value()));
+            return new None();
+        }
+    }
+
+    record ConcatStatement(String[] strings, String name) implements Statement{
+
+        @Override
+        public Result execute(Scope scope) {
+            if (strings.length == 0) return new None();
+            String s = getValue(strings[0], scope);
+            ArithmeticExpr expr = new ArithmeticValue(s);
+
+            for (int i = 1; i < strings.length; ++i){
+                String val = getValue(strings[i], scope);
+                expr = new ArithmeticExpr.Add(expr, new ArithmeticValue(val));
+            }
+
+            scope.put(name, new Variable(STRING, expr.evaluate().value()));
+            return new None();
+        }
+
+
     }
 }

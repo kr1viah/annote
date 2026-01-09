@@ -1,4 +1,6 @@
-package com.github.kusoroadeolu.annote.annotations;
+package com.github.kusoroadeolu.annote.annotations.containers;
+
+import com.github.kusoroadeolu.annote.annotations.End;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -7,6 +9,6 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface Prints {
-    Print[] value();
+public @interface Ends {
+    End[] value();
 }

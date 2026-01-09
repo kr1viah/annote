@@ -1,14 +1,14 @@
 package com.github.kusoroadeolu.annote.annotations;
 
-import com.github.kusoroadeolu.annote.annotations.containers.Returns;
+import com.github.kusoroadeolu.annote.annotations.containers.Concats;
 
 import java.lang.annotation.*;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-@Repeatable(Returns.class)
-public @interface Return {
-    String value();
-    String type();
+@Repeatable(Concats.class)
+public @interface Concat {
+    String name();
+    String[] value();
     int order();
 }
