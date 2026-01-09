@@ -2,9 +2,7 @@ package com.github.kusoroadeolu.annote.tokenizer;
 
 import java.util.*;
 
-
 import static com.github.kusoroadeolu.annote.tokenizer.Operator.fromChar;
-import static java.lang.Character.isAlphabetic;
 import static java.lang.Double.parseDouble;
 
 //So while the head of the stack has a less or equal precedence to the current symbol, we pop them off the stack onto the list

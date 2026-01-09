@@ -15,8 +15,8 @@ public record Scope(Map<String, Variable> variables, Scope parent) {
         if (name.isBlank()) throw new AnnoteException("Variable name cannot be empty");
         Variable v = variables.get(name);
         if (v != null) return v;
-        if (parent != null) return parent.get(name);
-        return null;
+        else if (parent != null) return parent.get(name);
+        else return null;
     }
 
     public void put(String name, Variable var) {

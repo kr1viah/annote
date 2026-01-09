@@ -2,12 +2,9 @@ package com.github.kusoroadeolu.annote;
 
 import com.github.kusoroadeolu.annote.annotations.*;
 import com.github.kusoroadeolu.annote.annotations.containers.*;
-import com.github.kusoroadeolu.annote.statements.Block;
-import com.github.kusoroadeolu.annote.statements.Result;
+import com.github.kusoroadeolu.annote.statements.*;
 import com.github.kusoroadeolu.annote.statements.Result.None;
 import com.github.kusoroadeolu.annote.statements.Result.ReturnValue;
-import com.github.kusoroadeolu.annote.statements.Scope;
-import com.github.kusoroadeolu.annote.statements.Statement;
 import com.github.kusoroadeolu.annote.statements.Statement.*;
 
 import java.lang.annotation.Annotation;
@@ -21,10 +18,18 @@ import static java.util.Collections.sort;
 public record AnnotationParser(Class<?> clazz) {
 
     public Result read(String methodName) {
+        return this.read(methodName, new Scope(new HashMap<>(), null), true);
+    }
+
+    public Result read(String methodName, Scope rootScope, boolean addFields){
         Method method = run(() -> clazz.getMethod(methodName));
         Annotation[] annotations = flatten(method.getDeclaredAnnotations());
+        Annotation[] fields = clazz.getDeclaredAnnotations();
+        if (addFields){
+            addFields(fields, rootScope);
+        }
+
         var ls = parseAnnotations(annotations);
-        Scope rootScope = new Scope(new HashMap<>(), null);
         Result rs = new None();
         for (Statement stmt : ls) {
             Result result = stmt.execute(rootScope);
@@ -39,7 +44,7 @@ public record AnnotationParser(Class<?> clazz) {
     public static List<Statement> parseAnnotations(Annotation[] annotations) {
         List<Statement> program = new ArrayList<>();
         Deque<Block> blockStack = new ArrayDeque<>(); //Keep track of scope
-        blockStack.push(new Block(program, null)); // Root stmt
+        blockStack.push(new Block(program, null)); // Root block,
 
         for (Annotation a : annotations) {
             if (a instanceof If i) {
@@ -127,7 +132,17 @@ public record AnnotationParser(Class<?> clazz) {
         return ls.stream().map(a -> a.a).toArray(Annotation[]::new);
     }
 
-    private static int getOrder(Annotation a) {
+    static void addFields(Annotation[] fields, Scope rootScope){
+        for (Annotation a : fields){
+            if (a instanceof Fields fs) {
+                for (Field f : fs.value()) rootScope.put(f.name(), new Variable(Type.fromString(f.type()), f.value()));
+            }else if (a instanceof Field f){
+                rootScope.put(f.name(), new Variable(Type.fromString(f.type()), f.value()));
+            }
+        }
+    }
+
+     static int getOrder(Annotation a) {
         try {
             var method = a.annotationType().getMethod("order");
             return (int) method.invoke(a);
