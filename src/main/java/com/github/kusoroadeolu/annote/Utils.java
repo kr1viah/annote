@@ -47,10 +47,6 @@ public class Utils {
     }
 
 
-    public static int asInt(Object o){
-        return ((Number)o).intValue();
-    }
-
     public static String asString(Object o){
         return String.valueOf(o);
     }
