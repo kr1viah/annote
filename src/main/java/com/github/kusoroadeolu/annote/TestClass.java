@@ -2,7 +2,9 @@ package com.github.kusoroadeolu.annote;
 
 import com.github.kusoroadeolu.annote.annotations.*;
 
-public class Test {
+@Field(name = "i", value = "1", type = "num")
+@Field(name = "j", value = "1", type = "num")
+public class TestClass {
 
     @Var(name = "i", value = "1", type = "num", order = 1)
     @Loop(condition = "i <= 100", order = 2)
@@ -26,7 +28,17 @@ public class Test {
     @Var(name = "i", value = "1", type = "num", order = 1)
     @Var(name = "i", value = "i + 1", type = "num", order = 2)
     @Print(value = "i", type = "num", order = 3)
+    public void print(){
+
+    }
+
+    @Call(methodName = "print", clazz = TestClass.class, order = 0)
     public void call(){
+
+    }
+
+    @Print(value = "i + j", type = "num", order = 1)
+    public void tryFields(){
 
     }
 }

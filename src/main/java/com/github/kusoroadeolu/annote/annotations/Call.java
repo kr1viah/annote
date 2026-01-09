@@ -9,7 +9,7 @@ import java.lang.annotation.*;
 @Repeatable(Calls.class)
 public @interface Call {
     String methodName();
-    String returnType();
+    String returnType() default "void";
     String assignTo() default "";
     Class<?> clazz();
     int order();
