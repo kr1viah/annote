@@ -23,7 +23,7 @@ public interface Statement {
    Result execute(Scope scope);
 
    default Expression getExpr(String string, Scope scope  , Type type){
-       String rebuilt = Utils.insertVariables(string, scope.variables());
+       String rebuilt = Utils.insertVariables(string, scope);
        return switch (type){
            case NUMBER -> MathParser.parse(rebuilt);
            case BOOLEAN -> ConditionParser.parse(rebuilt);

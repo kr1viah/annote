@@ -2,6 +2,7 @@ package com.github.kusoroadeolu.annote;
 
 import com.github.kusoroadeolu.annote.exception.AnnoteException;
 import com.github.kusoroadeolu.annote.math.ArithmeticExpr;
+import com.github.kusoroadeolu.annote.statements.Scope;
 import com.github.kusoroadeolu.annote.statements.Variable;
 import com.github.kusoroadeolu.annote.tokenizer.Operator;
 
@@ -71,14 +72,14 @@ public class Utils {
     }
 
 
-    public static String insertVariables(String original, Map<String, Variable> map) {
+    public static String insertVariables(String original, Scope scope) {
         original = original.replaceAll(NEW_LINE.pattern(), "");
 
-        List<String> varNames = new ArrayList<>(map.keySet());
+        List<String> varNames = new ArrayList<>(scope.keySet());
         varNames.sort((a, b) -> b.length() - a.length());
 
         for (String varName : varNames) {
-            Variable variable = map.get(varName);
+            Variable variable = scope.get(varName);
             if (variable == null) throw new AnnoteException("Variable: %s doesnt exist in this scope".formatted(varName));
             Object o = variable.obj();
             original = original.replaceAll(
