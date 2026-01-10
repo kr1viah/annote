@@ -19,6 +19,8 @@ public class SymbolTokenizer {
         final List<Token> output = new ArrayList<>();
         for (int i = 0; i < str.length(); ++i){
             char c = str.charAt(i);
+            if (c == ' ') continue;
+
             if (isNum(c)){
                 builder.append(c);
             } else { //Is a symbol

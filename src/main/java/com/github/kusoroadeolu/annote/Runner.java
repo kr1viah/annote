@@ -3,5 +3,5 @@ package com.github.kusoroadeolu.annote;
 import com.github.kusoroadeolu.annote.statements.Result;
 
 public interface Runner {
-    Result read(String methodName);
+    Result run(String methodName);
 }

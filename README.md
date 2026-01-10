@@ -57,7 +57,7 @@ This approach has been audited by senior architects at Fortune 500 companies. Th
 <dependency>
     <groupId>com.github.kusoroadeolu</groupId>
     <artifactId>annote</artifactId>
-    <version>v0.0.2</version>
+    <version>v0.0.3</version>
 </dependency>
 ```
 
@@ -160,7 +160,7 @@ We rejected those assumptions.
 
 ```java
 Runner runner = AnnoteRunner.newRunner(SomeClass.class);
-Result result = runner.read("yourMethod");
+Result result = runner.run("yourMethod");
 
 if (result instanceof Result.ReturnValue rv) {
     System.out.println("Returned: " + rv.value());
@@ -212,6 +212,19 @@ public void fizzbuzz() {}
 ```
 
 Yes, you have to number every single annotation. Yes, it's terrible. Yes, that's the point.
+
+### Examples That Actually Work
+We've provided sample code so you don't have to write this **magnificent disaster** yourself. Yet.
+```java
+Runner r = AnnoteRunner.newRunner(TestClass.class);
+r.run("fizzbuzz");  // 17 annotations to prove divisibility
+r.run("call");      // Recursion: because one bad idea enables another
+r.run("tryFields"); // State management via metadata
+r.run("print");     // Your IDE's syntax highlighter is crying
+r.run("repl");      // A calculator that shouldn't exist but does
+```
+
+These execute. They produce output. They work. We're as surprised as you are.
 
 ## Contributing
 

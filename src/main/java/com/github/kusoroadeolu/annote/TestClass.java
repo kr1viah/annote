@@ -41,4 +41,20 @@ public class TestClass {
     public void tryFields(){
 
     }
+
+    @Var(name = "result", value = "1", type = "num", order = 1)
+    @Loop(condition = "!(result==0)", order = 2)
+    @ReadLn(assignTo = "input", prompt = "calc> (or 0 to exit): ", type = "string", order = 3)
+    @Var(name = "result", value = "input", type = "num", order = 4)
+    @If(condition = "!(result==0)", order = 5)
+    @Concat(assignTo = "output", value = {"= ", "result"}, order = 6)
+    @Print(value = "output", type = "string", order = 7)
+    @End(order = 8)
+    @End(order = 9)
+    @Print(value = "Goodbye!", order = 10)
+    public void repl() {}
+
+
+
+
 }

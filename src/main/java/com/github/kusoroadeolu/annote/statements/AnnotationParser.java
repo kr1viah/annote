@@ -19,7 +19,7 @@ import static java.util.Collections.sort;
 public record AnnotationParser(Class<?> clazz) implements Runner {
 
     @Override
-    public Result read(String methodName) {
+    public Result run(String methodName) {
         return this.read(methodName, new Scope(new HashMap<>(), null), true);
     }
 
