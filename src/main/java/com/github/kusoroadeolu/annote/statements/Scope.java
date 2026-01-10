@@ -1,7 +1,5 @@
 package com.github.kusoroadeolu.annote.statements;
 
-import com.github.kusoroadeolu.annote.exception.AnnoteException;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -20,8 +18,18 @@ public record Scope(Map<String, Variable> variables, Scope parent) {
 
     }
 
-    public void put(String name, Variable var) {
-        variables.put(name, var);
+    public void put(String name, Variable variable) {
+        Scope scope = this;
+        while (scope != null){
+            if (scope.variables.containsKey(name)){
+                scope.variables.put(name, variable);
+                return;
+            }
+
+            scope = scope.parent;
+        }
+
+        this.variables.put(name, variable);
     }
 
     //There's probably a more efficient way to do this lol
