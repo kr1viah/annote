@@ -125,11 +125,11 @@ public void caller() {}
 ```
 
 ### Fields
-`@Field` declares class-level variables that persist across method calls within the same class. Unlike `@Var`, fields are attached to the class, not individual methods.
+`@Field` declares class-level variables. Like actual fields, but in annotations because we've abandoned all reason.
 ```java
 @Field(name = "counter", value = "0", type = "num")
-@Field(name = "name", value = "App", type = "string")
-public class MyClass {
+@Field(name = "appName", value = "Cursed", type = "string")
+public class StatefulHorror {
     
     @Var(name = "counter", value = "counter + 1", type = "num", order = 1)
     @Print(value = "counter", type = "num", order = 2)
@@ -137,17 +137,12 @@ public class MyClass {
 }
 ```
 
-**Note:** Field values are reset when using `@Call` to invoke other methods.
+Fields exist at the class level. Variables exist at the method level. Both exist in annotations. None of this should exist at all.
 
-```java
-@Call(methodName = "helper", returnType = "num", assignTo = "result", clazz = Test.class, order = 1)
-@Print(value = "result", type = "num", order = 2)
-public void caller() {}
-
+**Warning:** Field values reset on `@Call`. State management is someone else's problem. Probably yours.
 
 ### Error Handling
 `@Yeet` throws exceptions. No try/catch because we believe in consequences.
-
 ```java
 @If(condition = "x < 0", order = 1)
     @Yeet(value = "Negative numbers are forbidden", order = 2)
