@@ -4,6 +4,7 @@ import com.github.kusoroadeolu.annote.Runner;
 import com.github.kusoroadeolu.annote.Type;
 import com.github.kusoroadeolu.annote.annotations.*;
 import com.github.kusoroadeolu.annote.annotations.containers.*;
+import com.github.kusoroadeolu.annote.exception.AnnoteException;
 import com.github.kusoroadeolu.annote.statements.Result.None;
 import com.github.kusoroadeolu.annote.statements.Result.ReturnValue;
 import com.github.kusoroadeolu.annote.statements.Statement.*;
@@ -24,7 +25,14 @@ public record AnnotationParser(Class<?> clazz) implements Runner {
     }
 
     public Result read(String methodName, Scope rootScope, boolean addFields){
-        Method method = run(() -> clazz.getMethod(methodName));
+        Method method;
+
+        try {
+            method = clazz.getMethod(methodName);
+        } catch (NoSuchMethodException e) {
+            throw new AnnoteException(e);
+        }
+
         Annotation[] annotations = flatten(method.getDeclaredAnnotations());
         Annotation[] fields = clazz.getDeclaredAnnotations();
         if (addFields){

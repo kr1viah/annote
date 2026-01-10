@@ -139,7 +139,7 @@ public interface Statement {
         public Result execute(Scope scope) {
             if (methodName.isBlank()) throw new AnnoteException("Method name cannot be empty");
             AnnotationParser ap = new AnnotationParser(clazz);
-            Result r = ap.read(methodName);
+            Result r = ap.run(methodName);
             if (!type.equalsIgnoreCase("void") && (r instanceof ReturnValue(Object value))){
                 Type t = Type.fromString(type);
                 scope.put(assignTo, new Variable(t, value));
