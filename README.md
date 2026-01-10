@@ -143,8 +143,8 @@ We rejected those assumptions.
 ## Usage
 
 ```java
-AnnoteRunner runner = AnnoteRunner.newRunner(SomeClass.class);
-Result result = parser.read("yourMethod");
+Runner runner = AnnoteRunner.newRunner(SomeClass.class);
+Result result = runner.read("yourMethod");
 
 if (result instanceof Result.ReturnValue rv) {
     System.out.println("Returned: " + rv.value());

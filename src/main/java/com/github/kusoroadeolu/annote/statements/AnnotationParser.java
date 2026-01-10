@@ -1,5 +1,6 @@
 package com.github.kusoroadeolu.annote.statements;
 
+import com.github.kusoroadeolu.annote.Runner;
 import com.github.kusoroadeolu.annote.Type;
 import com.github.kusoroadeolu.annote.annotations.*;
 import com.github.kusoroadeolu.annote.annotations.containers.*;
@@ -15,8 +16,9 @@ import static com.github.kusoroadeolu.annote.ExceptionSupplier.run;
 import static com.github.kusoroadeolu.annote.Type.fromString;
 import static java.util.Collections.sort;
 
-public record AnnotationParser(Class<?> clazz) {
+public record AnnotationParser(Class<?> clazz) implements Runner {
 
+    @Override
     public Result read(String methodName) {
         return this.read(methodName, new Scope(new HashMap<>(), null), true);
     }
@@ -34,7 +36,7 @@ public record AnnotationParser(Class<?> clazz) {
         for (Statement stmt : ls) {
             Result result = stmt.execute(rootScope);
             if (result instanceof ReturnValue rv) {
-                rs = rv;
+                return rv;
             }
         }
 
