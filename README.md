@@ -57,7 +57,7 @@ IMPORTANT: Junior developers unfamiliar with advanced enterprise patterns may ex
 <dependency>
     <groupId>com.github.kusoroadeolu</groupId>
     <artifactId>annote</artifactId>
-    <version>v0.0.1</version>
+    <version>v0.0.2</version>
 </dependency>
 ```
 
@@ -123,6 +123,27 @@ public void interactive() {}
 @Print(value = "result", type = "num", order = 2)
 public void caller() {}
 ```
+
+### Fields
+`@Field` declares class-level variables that persist across method calls within the same class. Unlike `@Var`, fields are attached to the class, not individual methods.
+```java
+@Field(name = "counter", value = "0", type = "num")
+@Field(name = "name", value = "App", type = "string")
+public class MyClass {
+    
+    @Var(name = "counter", value = "counter + 1", type = "num", order = 1)
+    @Print(value = "counter", type = "num", order = 2)
+    public void increment() {}
+}
+```
+
+**Note:** Field values are reset when using `@Call` to invoke other methods.
+
+```java
+@Call(methodName = "helper", returnType = "num", assignTo = "result", clazz = Test.class, order = 1)
+@Print(value = "result", type = "num", order = 2)
+public void caller() {}
+
 
 ### Error Handling
 `@Yeet` throws exceptions. No try/catch because we believe in consequences.
