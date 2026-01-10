@@ -57,7 +57,7 @@ This approach has been audited by senior architects at Fortune 500 companies. Th
 <dependency>
     <groupId>com.github.kusoroadeolu</groupId>
     <artifactId>annote</artifactId>
-    <version>v0.0.4</version>
+    <version>v0.0.5</version>
 </dependency>
 ```
 
