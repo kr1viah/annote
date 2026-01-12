@@ -13,7 +13,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.*;
 
-
 import static com.github.kusoroadeolu.annote.Type.fromString;
 import static java.util.Collections.sort;
 
