@@ -168,7 +168,7 @@ public class AnnotationProcessor extends AbstractProcessor {
         Map<String, Deque<AnnotationMirror>> mirrorsByType = new HashMap<>();
         for (AnnotationMirror am : mirrors) {
             String topType = am.getAnnotationType().toString();
-            mirrorsByType.computeIfAbsent(topType, k -> new ArrayDeque<>()).addLast(am);
+            mirrorsByType.computeIfAbsent(topType, _ -> new ArrayDeque<>()).addLast(am);
 
             for (Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> ev : am.getElementValues().entrySet()) {
                 Object val = ev.getValue().getValue();
@@ -176,7 +176,7 @@ public class AnnotationProcessor extends AbstractProcessor {
                     for (Object inner : (List<?>) val) {
                         if (inner instanceof AnnotationMirror innerAm) {
                             String innerType = innerAm.getAnnotationType().toString();
-                            mirrorsByType.computeIfAbsent(innerType, k -> new ArrayDeque<>()).addLast(innerAm);
+                            mirrorsByType.computeIfAbsent(innerType, _ -> new ArrayDeque<>()).addLast(innerAm);
                         }
                     }
                 }
@@ -655,7 +655,7 @@ public class AnnotationProcessor extends AbstractProcessor {
             e.constant = ve.getSimpleName().toString();
             dto.kind = "enum";
             dto.value = e;
-        } else if (v instanceof TypeMirror tm) { // TODO for me (kr1viah): fix this in the original code (originally this casted to TypeElement)
+        } else if (v instanceof TypeMirror tm) {
             ClassDTO c = new ClassDTO();
 
             if (tm.getKind() == TypeKind.DECLARED) {
