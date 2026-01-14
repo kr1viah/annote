@@ -1,1 +1,1 @@
-rootProject.name = "annote-gradle"
+rootProject.name = "annote"
