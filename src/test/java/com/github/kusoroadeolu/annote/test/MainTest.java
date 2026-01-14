@@ -2,9 +2,13 @@ package com.github.kusoroadeolu.annote.test;
 
 import com.github.kusoroadeolu.annote.AnnoteRunner;
 import com.github.kusoroadeolu.annote.Runner;
+import com.github.kusoroadeolu.annote.annotations.processor.AnnotationProcessor;
 import org.junit.jupiter.api.Test;
 
 class MainTest {
+    {
+        AnnotationProcessor.init(); // ugh... I don't know....
+    }
     @Test
     void fizzbuzz() {
         Runner r = AnnoteRunner.newRunner(TestClass.class);

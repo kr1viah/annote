@@ -2,6 +2,7 @@ package com.github.kusoroadeolu.annote.annotations.processor;
 
 import com.google.auto.service.AutoService;
 import com.google.gson.*;
+import com.google.gson.reflect.TypeToken;
 import com.sun.source.tree.*;
 import com.sun.source.util.TreePath;
 import com.sun.source.util.Trees;
@@ -16,9 +17,14 @@ import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.FileObject;
 import javax.tools.StandardLocation;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.io.Writer;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -677,5 +683,99 @@ public class AnnotationProcessor extends AbstractProcessor {
             throw new IllegalStateException("Unknown annotation member type: " + v);
         }
         return dto;
+    }
+
+    // === runtime stuff ===
+
+    public static void init() {
+        Type type = new TypeToken<Map<String, List<ElementRepresentation>>>() {}.getType();
+        try {
+            ClassLoader cl = Thread.currentThread().getContextClassLoader();
+            Enumeration<URL> mods = cl.getResources("META-INF/kr1v/index.json");
+            while (mods.hasMoreElements()) {
+                URL mod = mods.nextElement();
+                try (Reader reader = new InputStreamReader(mod.openStream(), StandardCharsets.UTF_8)) {
+                    Map<String, List<ElementRepresentation>> map = GSON.fromJson(reader, type);
+
+                    for (String clazz : map.keySet()) {
+                        classToRepresentation.put(Class.forName(clazz), map.get(clazz));
+                    }
+                }
+            }
+        } catch (IOException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static final Map<Class<?>, List<ElementRepresentation>> classToRepresentation = new HashMap<>();
+
+    public static List<Element> getDeclaredElements(Class<?> clazz) {
+        List<Element> elementsOfClass = new ArrayList<>();
+        List<ElementRepresentation> elementRepresentations = classToRepresentation.get(clazz);
+
+        try {
+            assert elementRepresentations != null;
+            for (ElementRepresentation el : elementRepresentations) {
+                Field f = null;
+                Method m = null;
+                Class<?> klass = null;
+                switch (el.type) {
+                    case "field" -> f = clazz.getDeclaredField(el.name);
+                    case "innerClass" -> klass = Class.forName(el.name);
+                    case "method" -> {
+                        if (el.name.contains("<")) continue;
+                        try {
+                            List<Class<?>> typeList = new ArrayList<>();
+                            for (String type : el.types) {
+                                typeList.add(Class.forName(type));
+                            }
+                            Class<?>[] types = typeList.toArray(new Class[]{});
+                            m = clazz.getDeclaredMethod(el.name, types);
+                        } catch (ClassNotFoundException ignored) {
+                            // cant really do anything.... mapping issues, compare and method name and parameter names/length
+                            outer: for (Method method : clazz.getDeclaredMethods()) {
+                                if (method.getParameterCount() != el.types.size()) continue;
+                                if (!method.getName().equals(el.name)) continue;
+
+                                var params = method.getParameters();
+                                for (int i = 0; i < params.length; i++) {
+                                    if (!params[i].getName().equals(el.parameterNames.get(i))) {
+                                        continue outer;
+                                    }
+                                }
+
+                                m = method;
+                                break;
+                            }
+                        }
+                    }
+                    default -> {}
+                }
+
+                Element element = new Element(f, m, klass);
+                for (AnnotationDTO ann : el.annotations) {
+                    element.annotations.add(toAnnotation(ann, Class.forName(ann.annotationType)));
+                }
+                elementsOfClass.add(element);
+            }
+        } catch (NoSuchFieldException | ClassNotFoundException | NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
+
+        return elementsOfClass;
+    }
+
+    public static Annotation[] getAnnotations(Method m) {
+        Class<?> declaring = m.getDeclaringClass();
+        var elements = AnnotationProcessor.getDeclaredElements(declaring);
+        for (Element element : elements) {
+            if (element.method != null) {
+                Method method = element.method;
+                if (method.equals(m)) {
+                    return element.annotations.toArray(new Annotation[0]);
+                }
+            }
+        }
+        throw new IllegalArgumentException();
     }
 }
